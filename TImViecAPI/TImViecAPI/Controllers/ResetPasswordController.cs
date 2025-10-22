@@ -49,7 +49,7 @@ namespace TImViecAPI.Controllers
             await _context.SaveChangesAsync();
 
             // Tạo link reset (thay localhost:5000 bằng domain thật khi deploy)
-            var resetLink = $"https://localhost:7144/api/ResetPassword/confirm?token={token.Token}";
+            var resetLink = $"http://localhost:5173/resetpassword/confirm?token={token.Token}";
 
             // Gửi email thật
             await _emailService.SendEmailAsync(

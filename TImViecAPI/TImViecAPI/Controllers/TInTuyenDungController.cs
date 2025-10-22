@@ -1,8 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using TImViecAPI.Data;
 using TImViecAPI.Model;
 
@@ -145,6 +146,90 @@ namespace TImViecAPI.Controllers
             {
                 Message = "Lấy danh sách tin tuyển dụng thành công!",
                 Data = tins
+            });
+        }
+
+
+
+
+        [HttpGet("list-by-ntd")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<IActionResult> GetTinByNhaTuyenDung()
+        {
+            // Lấy thông tin người dùng từ JWT
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (string.IsNullOrEmpty(userIdClaim))
+                return Unauthorized(new { Message = "Không tìm thấy thông tin người dùng trong token." });
+
+            int tkid = int.Parse(userIdClaim);
+
+            // Tìm NhaTuyenDung tương ứng
+            var ntd = await _context.NhaTuyenDung.FirstOrDefaultAsync(x => x.ntdid == tkid);
+            if (ntd == null)
+                return Unauthorized(new { Message = "Không tìm thấy tài khoản nhà tuyển dụng." });
+
+            // Lọc tin theo ID nhà tuyển dụng
+            var tins = await _context.TInTuyenDung
+                .Where(ttd => ttd.nhaTuyenDungID == ntd.ntdid)
+                .Select(ttd => new
+                {
+                    ttd.ttdid,
+                    ttd.TieuDe,
+                    ttd.MieuTa,
+                    ttd.DaDuyet,
+                    ttd.TrangThai,
+                    ttd.YeuCau,
+                    ttd.Tuoi,
+                    ttd.NgayDang,
+                    ttd.HanNop
+                })
+                .ToListAsync();
+
+            return Ok(new
+            {
+                Message = "Lấy danh sách tin của NTD thành công!",
+                Data = tins
+            });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTinTuyenDungById(int id)
+        {
+            var tin = await _context.TInTuyenDung
+                .Include(t => t.LoaiHinhLamViec)
+                .Include(t => t.ChucDanh)
+                .Include(t => t.KinhNghiem)
+                .Include(t => t.BangCap)
+                .Include(t => t.LinhVuc)
+                .Include(t => t.ViTri)
+                .FirstOrDefaultAsync(t => t.ttdid == id);
+
+            if (tin == null)
+                return NotFound(new { Message = "Không tìm thấy tin tuyển dụng." });
+
+            return Ok(new
+            {
+                Message = "Lấy thông tin tin tuyển dụng thành công!",
+                Data = new
+                {
+                    tin.ttdid,
+                    tin.TieuDe,
+                    tin.MieuTa,
+                    tin.DaDuyet,
+                    tin.TrangThai,
+                    tin.YeuCau,
+                    tin.Tuoi,
+                    tin.NgayDang,
+                    tin.HanNop,
+                    tin.loaihinhID,
+                    tin.chucdanhID,
+                    tin.kinhnghiemID,
+                    tin.bangcapID,
+                    tin.linhvucIID,
+                    tin.vitriID,
+                    tin.nhaTuyenDungID
+                }
             });
         }
 
