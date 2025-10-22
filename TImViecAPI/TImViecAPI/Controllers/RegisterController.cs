@@ -165,7 +165,14 @@ namespace TImViecAPI.Controllers
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
 
-
+            // 3️⃣ Lưu token vào cookie
+            Response.Cookies.Append("jwt_token", tokenString, new CookieOptions
+            {
+                HttpOnly = true,       // không cho JS truy cập token
+                Secure = false,        // ⚠️ dùng HTTP -> để false (khi deploy HTTPS thì true)
+                SameSite = SameSiteMode.None,
+                Expires = DateTime.UtcNow.AddHours(2)
+            });
             return Ok(new
             {
                 Message = "Đăng nhập thành công!",
