@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TImViecAPI.Data;
 using TImViecAPI.Model;
+using TImViecAPI.Model_Function.Dtos;
 
 namespace TImViecAPI.Controllers
 {
@@ -93,8 +94,8 @@ namespace TImViecAPI.Controllers
             {
                 TieuDe = dto.TieuDe,
                 MieuTa = dto.MieuTa,
-                DaDuyet = dto.DaDuyet ?? false, // Default false nếu null
-                TrangThai = dto.TrangThai,
+                DaDuyet = false, // Luôn đặt DaDuyet = false khi tạo mới
+                TrangThai = dto.TrangThai ?? "Chờ duyệt",
                 YeuCau = dto.YeuCau,
                 Tuoi = dto.Tuoi,
                 NgayDang = DateTime.Now,
@@ -110,7 +111,99 @@ namespace TImViecAPI.Controllers
 
             _context.TInTuyenDung.Add(tinTuyenDung);
             await _context.SaveChangesAsync();
-            return Ok(new { Message = "Thêm tin tuyển dụng thành công!", ttdid = tinTuyenDung.ttdid });
+            // Tạo thông báo cho tất cả tài khoản Admin
+            var admins = await _context.NguoiDung
+                .Where(u => !_context.UngVien.Any(uv => uv.uvid == u.tkid) &&
+                           !_context.NhaTuyenDung.Any(ntd => ntd.ntdid == u.tkid))
+                .ToListAsync();
+            foreach (var admin in admins)
+            {
+                var thongBao = new ThongBao
+                {
+                    NoiDung = $"Tin tuyển dụng mới '{dto.TieuDe}' cần được duyệt.",
+                    NgayBao = DateTime.UtcNow
+                };
+                _context.ThongBao.Add(thongBao);
+                await _context.SaveChangesAsync();
+
+                var nguoiDungThongBao = new NguoiDung_ThongBao
+                {
+                    nguoidungID = admin.tkid,
+                    thongbaoID = thongBao.tbid,
+                    DaXem = false
+                };
+                _context.NguoiDung_ThongBao.Add(nguoiDungThongBao);
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Tin tuyển dụng đã được tạo và đang chờ duyệt!", ttdid = tinTuyenDung.ttdid });
+            //return Ok(new { Message = "Thêm tin tuyển dụng thành công!", ttdid = tinTuyenDung.ttdid });
+        }
+
+        [HttpPut("approve/{id}")]
+        [Authorize(Roles = "Admin")] // Chỉ Admin được thực hiện
+        public async Task<IActionResult> ApproveTinTuyenDung(int id, [FromBody] TinTuyenDungActionDto dto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var tinTuyenDung = await _context.TInTuyenDung.FindAsync(id);
+            if (tinTuyenDung == null)
+            {
+                return NotFound(new { Message = "Tin tuyển dụng không tồn tại." });
+            }
+
+            // Kiểm tra null và ép kiểu DaDuyet
+            if (tinTuyenDung.DaDuyet.HasValue && tinTuyenDung.DaDuyet.Value)
+            {
+                return BadRequest(new { Message = "Tin tuyển dụng đã được duyệt trước đó." });
+            }
+
+            // Kiểm tra null và ép kiểu nhaTuyenDungID
+            if (!tinTuyenDung.nhaTuyenDungID.HasValue)
+            {
+                return BadRequest(new { Message = "Tin tuyển dụng không có thông tin nhà tuyển dụng." });
+            }
+
+            // Xử lý hành động
+            string message;
+            if (dto.Action == "approve")
+            {
+                tinTuyenDung.DaDuyet = true;
+                tinTuyenDung.TrangThai = "Đã duyệt";
+                message = $"Tin tuyển dụng '{tinTuyenDung.TieuDe}' đã được duyệt.";
+            }
+            else // dto.Action == "reject"
+            {
+                tinTuyenDung.DaDuyet = false;
+                tinTuyenDung.TrangThai = "Bị từ chối";
+                message = $"Tin tuyển dụng '{tinTuyenDung.TieuDe}' đã bị từ chối." +
+                          (string.IsNullOrEmpty(dto.Reason) ? "" : $" Lý do: {dto.Reason}");
+            }
+
+            await _context.SaveChangesAsync();
+
+            // Gửi thông báo cho nhà tuyển dụng
+            var thongBao = new ThongBao
+            {
+                NoiDung = message,
+                NgayBao = DateTime.UtcNow
+            };
+            _context.ThongBao.Add(thongBao);
+            await _context.SaveChangesAsync();
+
+            var nguoiDungThongBao = new NguoiDung_ThongBao
+            {
+                nguoidungID = tinTuyenDung.nhaTuyenDungID.Value,
+                thongbaoID = thongBao.tbid,
+                DaXem = false
+            };
+            _context.NguoiDung_ThongBao.Add(nguoiDungThongBao);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = dto.Action == "approve" ? "Duyệt tin tuyển dụng thành công!" : "Từ chối tin tuyển dụng thành công!" });
         }
 
         [HttpGet("list")]

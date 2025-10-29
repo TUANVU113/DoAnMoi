@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TImViecAPI")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9fe1f3c97c94ec78554ca83e478496acd78ae4a0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d58bfbe6cf12267e96d6a3b77a167ce171dc91a7")]
 [assembly: System.Reflection.AssemblyProductAttribute("TImViecAPI")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TImViecAPI")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -93,6 +93,59 @@ namespace TImViecAPI.Controllers
             }
         }
 
+        [HttpPost("register-Admin")]
+        public async Task<IActionResult> RegisterAdmin([FromBody] RegisterAdminDto registerDto)
+        {
+            // Kiểm tra ModelState (validation từ RegisterDto)
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Kiểm tra email đã tồn tại
+            if (await _context.NguoiDung.AnyAsync(u => u.mail == registerDto.Mail))
+            {
+                return BadRequest(new { Message = "Email đã được sử dụng." });
+            }
+
+            // Kiểm tra số điện thoại đã tồn tại
+            if (await _context.NguoiDung.AnyAsync(u => u.sdt == registerDto.Sdt))
+            {
+                return BadRequest(new { Message = "Số điện thoại đã được sử dụng." });
+            }
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                // Tạo và lưu NguoiDung
+                var nguoiDung = new NguoiDung
+                {
+                    tkName = registerDto.TkName,
+                    sdt = registerDto.Sdt,
+                    mail = registerDto.Mail,
+                    password = BCrypt.Net.BCrypt.HashPassword(registerDto.Password)
+                };
+                _context.NguoiDung.Add(nguoiDung);
+                await _context.SaveChangesAsync();  // Lưu để lấy tkid
+
+
+
+                await transaction.CommitAsync();
+
+                return Ok(new
+                {
+                    Message = "Đăng ký thành công Admin!.",
+                    TkId = nguoiDung.tkid
+
+                });
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync();
+                return StatusCode(500, new { Message = "Lỗi khi lưu dữ liệu: " + ex.Message });
+            }
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto loginDto )
         {
@@ -106,42 +159,15 @@ namespace TImViecAPI.Controllers
                 return BadRequest(new { Message = "Email hoặc mật khẩu không đúng." });
             }
 
-            //// Tạo JWT token
             
-            //var jwtSettings = _configuration.GetSection("Jwt");
-            //var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
-            //var tokenDescriptor = new SecurityTokenDescriptor
-            //{
-            //    Subject = new ClaimsIdentity(new[]
-            //    {
-            //        new Claim(ClaimTypes.NameIdentifier, nguoiDung.tkid.ToString()),  // tkid để dùng sau
-            //        new Claim(ClaimTypes.Name, nguoiDung.tkName)
-            //    }),
-            //    Expires = DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpiresInMinutes"])),
-            //    Issuer = jwtSettings["Issuer"],
-            //    Audience = jwtSettings["Audience"],
-            //    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            //};
             // Kiểm tra vai trò
             var nhaTuyenDung = await _context.NhaTuyenDung
                 .FirstOrDefaultAsync(ntd => ntd.ntdid == nguoiDung.tkid);
             var ungVien = await _context.UngVien
                 .FirstOrDefaultAsync(uv => uv.uvid == nguoiDung.tkid);
-            var role = nhaTuyenDung != null ? "NhaTuyenDung" : (ungVien != null ? "UngVien" : "Unknown");
-            if (role == "Unknown")
-            {
-                return BadRequest(new { Message = "Tài khoản không thuộc vai trò nào." });
-            }
+            var role = nhaTuyenDung != null ? "NhaTuyenDung" : (ungVien != null ? "UngVien" : "Admin");
 
-            // Tạo claims dựa trên vai trò
-            //var claims = new List<Claim>
-            //{
-            //    new Claim(ClaimTypes.NameIdentifier, nguoiDung.tkid.ToString()),
-            //    new Claim(ClaimTypes.Name, nguoiDung.tkName),
-            //    new Claim(ClaimTypes.Role, role)
-            //};
-
-           
+          
             var claims = new List<Claim>
             {
                     new Claim(ClaimTypes.NameIdentifier, nguoiDung.tkid.ToString()),
