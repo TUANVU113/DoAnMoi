@@ -69,8 +69,7 @@ namespace TImViecAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            // Lấy nhaTuyenDungID từ cookie
-            //var ntdId = User.FindFirst("NhaTuyenDungID")?.Value;
+            
             string Users = User.Identity.Name;
             if (Users == null)
             {

@@ -189,6 +189,22 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "TImViecAPI.Controllers.FindController",
+    "Method": "Search",
+    "RelativePath": "api/Find/search",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.Model.Dto.TinTuyenDungSearchDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "TImViecAPI.Controllers.HoSoController",
     "Method": "CreateHoSo",
     "RelativePath": "api/HoSo/create",
@@ -676,6 +692,32 @@
       }
     ],
     "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.ThongTinCaNhanController",
+    "Method": "CreateThongTinCaNhan",
+    "RelativePath": "api/ThongTinCaNhan/create",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.DTO.ThongTinCaNhanCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "TImViecAPI.Model.ThongTinCaNhan",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "TImViecAPI.Controllers.TInTuyenDungController",

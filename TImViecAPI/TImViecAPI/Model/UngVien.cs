@@ -24,6 +24,7 @@ namespace TImViecAPI.Model
         public LinhVuc? LinhVuc { get; set; }
 
         public NguoiDung NguoiDung { get; set; }
+        public ThongTinCaNhan? ThongTinCaNhan { get; set; }
     }
 
 }
