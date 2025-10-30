@@ -33,6 +33,7 @@ namespace TImViecAPI.Data
         public DbSet<BaoCao> BaoCao { get; set; }
         public DbSet<UngVien_BaoCao> UngVien_BaoCao { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
+        public DbSet<ThongTinCaNhan> thongTinCaNhans { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -235,6 +236,15 @@ namespace TImViecAPI.Data
                 .WithMany() // NguoiDung có thể có nhiều PasswordResetToken
                 .HasForeignKey(pt => pt.TkId)
                 .OnDelete(DeleteBehavior.Cascade); // Xóa token khi NguoiDung bị xóa
+                                                  
+            // Cấu hình quan hệ 1-1 giữa UngVien và ThongTinCaNhan
+            modelBuilder.Entity<ThongTinCaNhan>()
+                .HasOne(tt => tt.UngVien)           // ThongTinCaNhan có 1 UngVien
+                .WithOne(uv => uv.ThongTinCaNhan)   // UngVien có 1 ThongTinCaNhan (nếu bạn thêm navigation ngược)
+                .HasForeignKey<ThongTinCaNhan>(tt => tt.ungvienID)  // Khóa ngoại ở ThongTinCaNhan
+                .OnDelete(DeleteBehavior.Cascade);
+
+
         }
     }
 }
