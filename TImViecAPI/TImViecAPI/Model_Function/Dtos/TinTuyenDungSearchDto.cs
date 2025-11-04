@@ -1,4 +1,4 @@
-﻿namespace TImViecAPI.Model.Dto
+﻿namespace TImViecAPI.Model_Function.Dtos
 {
     public class TinTuyenDungSearchDto
     {

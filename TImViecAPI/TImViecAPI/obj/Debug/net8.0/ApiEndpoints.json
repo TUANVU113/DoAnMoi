@@ -198,7 +198,7 @@
     "Parameters": [
       {
         "Name": "dto",
-        "Type": "TImViecAPI.Model.Dto.TinTuyenDungSearchDto",
+        "Type": "TImViecAPI.Model_Function.Dtos.TinTuyenDungSearchDto",
         "IsRequired": true
       }
     ],
@@ -218,6 +218,16 @@
         "IsRequired": false
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.HoSoController",
+    "Method": "LayHoSoCuaToi",
+    "RelativePath": "api/HoSo/cua-toi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
@@ -703,7 +713,7 @@
     "Parameters": [
       {
         "Name": "dto",
-        "Type": "TImViecAPI.DTO.ThongTinCaNhanCreateDto",
+        "Type": "TImViecAPI.Model_Function.Dtos.ThongTinCaNhanCreateDto",
         "IsRequired": true
       }
     ],
@@ -774,6 +784,59 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.TInTuyenDungController",
+    "Method": "CapNhatTrangThai",
+    "RelativePath": "api/TInTuyenDung/cap-nhat-trang-thai/{utid}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "utid",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.Model_Function.Dtos.CapNhatTrangThaiDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.TInTuyenDungController",
+    "Method": "ChiTietDonUngTuyen",
+    "RelativePath": "api/TInTuyenDung/chi-tiet-don/{utid}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "utid",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.TInTuyenDungController",
+    "Method": "DanhSachUngTuyenCoBan",
+    "RelativePath": "api/TInTuyenDung/danh-sach-co-ban/{tinId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tinId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.TInTuyenDungController",
     "Method": "DeleteTInTuyenDung",
     "RelativePath": "api/TInTuyenDung/delete/{id}",
     "HttpMethod": "DELETE",
@@ -824,6 +887,32 @@
       {
         "Name": "dto",
         "Type": "TImViecAPI.Controllers.TInTuyenDungController\u002BTInTuyenDungDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.UngTuyenController",
+    "Method": "CuaToi",
+    "RelativePath": "api/UngTuyen/cua-toi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.UngTuyenController",
+    "Method": "NopDon",
+    "RelativePath": "api/UngTuyen/nop-don",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.Model_Function.Dtos.UngTuyenRequestDto",
         "IsRequired": true
       }
     ],
