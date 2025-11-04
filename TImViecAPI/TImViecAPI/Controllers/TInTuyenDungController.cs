@@ -5,8 +5,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TImViecAPI.Data;
+
+
 using TImViecAPI.Model;
 using TImViecAPI.Model_Function.Dtos;
+using static TImViecAPI.Controllers.HoSoController;
+using ThongTinCaNhanDto = TImViecAPI.Model_Function.Dtos.ThongTinCaNhanDto;
 
 namespace TImViecAPI.Controllers
 {
@@ -403,5 +407,190 @@ namespace TImViecAPI.Controllers
                 return StatusCode(500, new { Message = "Lỗi khi xóa: " + ex.Message });
             }
         }
+        // Trong UngTuyenController.cs
+
+
+        [HttpGet("danh-sach-co-ban/{tinId}")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<IActionResult> DanhSachUngTuyenCoBan(int tinId)
+        {
+            // 1. Kiểm tra NTD + tin
+            var ntd = await _context.NhaTuyenDung
+                .FirstOrDefaultAsync(n => n.ntdName == User.Identity.Name);
+            if (ntd == null) return Unauthorized("NTD không tồn tại.");
+
+            var tin = await _context.TInTuyenDung
+                .FirstOrDefaultAsync(t => t.ttdid == tinId && t.nhaTuyenDungID == ntd.ntdid);
+            if (tin == null) return NotFound($"Tin ID {tinId} không tồn tại hoặc không thuộc về bạn.");
+
+            // 2. LẤY DỮ LIỆU THÔ (chỉ DateTime?)
+            var data = await _context.UngTuyen
+                .Where(ut => ut.tintuyendungid == tinId)
+                .Join(_context.UngVien_UngTuyen,
+                      ut => ut.utid,
+                      uu => uu.ungtuyenID,
+                      (ut, uu) => new { ut.utid, ut.NgayNop, uu.ungvienID, ut.TrangThai })
+                .OrderByDescending(x => x.NgayNop) // ← SẮP XẾP THEO DateTime? (EF Core hiểu)
+                .ToListAsync(); // RA MEMORY
+
+            // 3. CHUYỂN ĐỔI SANG DTO Ở MEMORY (dùng ?. thoải mái)
+            var danhSach = data.Select(x => new UngTuyenCoBanDto
+            {
+                DonUngTuyenId = x.utid,
+                UngVienId = x.ungvienID,
+                NgayNop = x.NgayNop?.ToString("dd/MM/yyyy HH:mm") ?? "Không xác định",
+                TrangThai = x.TrangThai ?? "Đang chờ duyệt"
+            }).ToList();
+
+            if (!danhSach.Any())
+                return Ok(new { Message = $"Tin ID {tinId} chưa có ứng viên nào nộp đơn." });
+
+            return Ok(danhSach);
+        }
+
+        [HttpGet("chi-tiet-don/{utid}")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<IActionResult> ChiTietDonUngTuyen(int utid)
+        {
+            // 1. Kiểm tra NTD
+            var ntd = await _context.NhaTuyenDung
+                .FirstOrDefaultAsync(n => n.ntdName == User.Identity.Name);
+            if (ntd == null) return Unauthorized("NTD không tồn tại.");
+
+            // 2. Lấy đơn ứng tuyển + kiểm tra quyền (tin phải thuộc NTD)
+            var don = await _context.UngTuyen
+                .Where(ut => ut.utid == utid)
+                .Join(_context.TInTuyenDung,
+                      ut => ut.tintuyendungid,
+                      tin => tin.ttdid,
+                      (ut, tin) => new { ut, tin.nhaTuyenDungID })
+                .FirstOrDefaultAsync();
+
+            if (don == null) return NotFound("Đơn ứng tuyển không tồn tại.");
+            if (don.nhaTuyenDungID != ntd.ntdid) return Forbid("Bạn không có quyền xem đơn này.");
+
+            // 3. Lấy dữ liệu chi tiết
+            var data = await (
+                from ut in _context.UngTuyen.Where(ut => ut.utid == utid)
+                join uu in _context.UngVien_UngTuyen on ut.utid equals uu.ungtuyenID
+                join uv in _context.UngVien.Include(u => u.ThongTinCaNhan) on uu.ungvienID equals uv.uvid
+                join hu in _context.HoSo_UngTuyen on ut.utid equals hu.ungtuyenID
+                join h in _context.HoSo on hu.hosoID equals h.hsid
+                select new { ut, uv, h }
+            ).FirstOrDefaultAsync();
+
+            if (data == null) return NotFound("Không tìm thấy thông tin ứng viên hoặc hồ sơ.");
+
+            // 4. Chuyển sang DTO
+            var result = new ChiTietUngVienDto
+            {
+                DonUngTuyenId = data.ut.utid,
+                NgayNop = data.ut.NgayNop?.ToString("dd/MM/yyyy HH:mm") ?? "Không xác định",
+                TrangThai = data.ut.TrangThai ?? "Đang chờ duyệt",
+
+                ThongTinCaNhan = new TImViecAPI.Model_Function.Dtos.ThongTinCaNhanDto
+                {
+                    HoVaTen = data.uv.ThongTinCaNhan?.HoVaTen ?? "Chưa cung cấp",
+                    GioiTinh = data.uv.ThongTinCaNhan?.GioiTinh ?? "Chưa cung cấp",
+                    NgaySinh = data.uv.ThongTinCaNhan?.NgaySinh?.ToString("dd/MM/yyyy"),
+                    SDT = data.uv.ThongTinCaNhan?.SDT ?? "Chưa cung cấp",
+                    Email = data.uv.ThongTinCaNhan?.Email ?? "Chưa cung cấp",
+                    QuocGia = data.uv.ThongTinCaNhan?.QuocGia ?? "Việt Nam",
+                    Tinh = data.uv.ThongTinCaNhan?.Tinh ?? "Chưa cung cấp",
+                    Huyen = data.uv.ThongTinCaNhan?.Huyen ?? "Chưa cung cấp",
+                    DiaChi = data.uv.ThongTinCaNhan?.DiaChi ?? "Chưa cung cấp",
+                    CCCD = data.uv.ThongTinCaNhan?.CCCD ?? "Chưa cung cấp",
+                    NoiSinh = data.uv.ThongTinCaNhan?.NoiSinh ?? "Chưa cung cấp"
+                },
+
+                HoSo = new TImViecAPI.Model_Function.Dtos.HoSoDto
+                {
+                    HoSoId = data.h.hsid,
+                    HoSoName = data.h.hsName ?? "Chưa đặt tên",
+                    FileUrl = data.h.ViTriFile != null
+                        ? $"/uploads/cv/{Path.GetFileName(data.h.ViTriFile)}"
+                        : null
+                }
+            };
+
+            return Ok(result);
+        }
+
+        [HttpPut("cap-nhat-trang-thai/{utid}")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<IActionResult> CapNhatTrangThai(int utid, [FromBody] CapNhatTrangThaiDto dto)
+        {
+            // 1. LẤY NTD TỪ User.Identity.Name (ntdName == tkName)
+            var ntd = await _context.NhaTuyenDung
+                .FirstOrDefaultAsync(n => n.ntdName == User.Identity.Name);
+
+            if (ntd == null)
+                return Unauthorized("Nhà tuyển dụng không tồn tại.");
+
+            // 2. LẤY ĐƠN ỨNG TUYỂN + KIỂM TRA QUYỀN (tin phải thuộc NTD)
+            var don = await _context.UngTuyen
+                .Include(ut => ut.TInTuyenDung)
+                .FirstOrDefaultAsync(ut => ut.utid == utid && ut.TInTuyenDung!.nhaTuyenDungID == ntd.ntdid);
+
+            if (don == null)
+                return NotFound("Đơn ứng tuyển không tồn tại hoặc không thuộc về bạn.");
+
+            // 3. CẬP NHẬT TRẠNG THÁI
+            don.TrangThai = dto.TrangThai;
+            await _context.SaveChangesAsync();
+
+            // 4. LẤY ỨNG VIÊN (qua UngVien_UngTuyen)
+            var ungVienId = await _context.UngVien_UngTuyen
+                .Where(uu => uu.ungtuyenID == utid)
+                .Select(uu => uu.ungvienID)
+                .FirstOrDefaultAsync();
+
+            if (ungVienId == 0)
+                return Ok(new { Message = "Cập nhật trạng thái thành công, nhưng không tìm thấy ứng viên." });
+
+            // 5. TẠO NỘI DUNG THÔNG BÁO
+            string tieuDeTin = don.TInTuyenDung?.TieuDe ?? "Tin tuyển dụng";
+            string noiDung = dto.TrangThai switch
+            {
+                "Đã duyệt" => $"Chúc mừng! Đơn ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã được **duyệt**.",
+                "Từ chối" => $"Rất tiếc, đơn ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã bị **từ chối**.",
+                "Phỏng vấn" => $"Bạn đã được mời **phỏng vấn** cho tin **\"{tieuDeTin}\"**. Vui lòng kiểm tra email hoặc liên hệ nhà tuyển dụng.",
+                _ => $"Trạng thái ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã được cập nhật thành: **{dto.TrangThai}**."
+            };
+
+            // 6. TẠO THÔNG BÁO
+            var thongBao = new ThongBao
+            {
+                NoiDung = noiDung,
+                NgayBao = DateTime.Now.Date
+            };
+            _context.ThongBao.Add(thongBao);
+            await _context.SaveChangesAsync(); // Lưu để lấy tbid
+
+            // 7. LIÊN KẾT VỚI ỨNG VIÊN (dùng uvid = tkid)
+            _context.NguoiDung_ThongBao.Add(new NguoiDung_ThongBao
+            {
+                nguoidungID = ungVienId,
+                thongbaoID = thongBao.tbid,
+                DaXem = false
+            });
+            await _context.SaveChangesAsync();
+
+            // 8. TRẢ VỀ KẾT QUẢ
+            return Ok(new
+            {
+                Message = "Cập nhật trạng thái và gửi thông báo thành công!",
+                DonUngTuyenId = utid,
+                TrangThaiMoi = dto.TrangThai,
+                ThongBao = new
+                {
+                    tbid = thongBao.tbid,
+                    NoiDung = thongBao.NoiDung,
+                    NgayBao = ((DateTime)thongBao.NgayBao).ToString("dd/MM/yyyy"),
+                    DaXem = false
+                }
+            });
+        }
+
     }
 }

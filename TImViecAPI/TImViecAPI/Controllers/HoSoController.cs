@@ -6,6 +6,8 @@ using System.IO;
 using TImViecAPI.Data;
 using TImViecAPI.Model;
 using System.ComponentModel.DataAnnotations;
+using TImViecAPI.Model_Function.Dtos;
+
 
 namespace TImViecAPI.Controllers
 {
@@ -22,18 +24,11 @@ namespace TImViecAPI.Controllers
             _environment = environment;
         }
 
-        public class HoSoDto
-        {
-            [Required(ErrorMessage = "Tên hồ sơ là bắt buộc.")]
-            [StringLength(255)]
-            public string? hsName { get; set; }
-
-            // File upload sẽ được gửi qua form-data (không cần DTO)
-        }
+        
 
         [HttpPost("create")]
         [Authorize(Roles = "UngVien")] // Chỉ ứng viên được tạo hồ sơ
-        public async Task<IActionResult> CreateHoSo([FromForm] HoSoDto dto)
+        public async Task<IActionResult> CreateHoSo([FromForm] HoSoCreateDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -166,7 +161,7 @@ namespace TImViecAPI.Controllers
 
         [HttpPut("update/{hsid}")]
         [Authorize(Roles = "UngVien")]
-        public async Task<IActionResult> UpdateHoSo(int hsid, [FromForm] HoSoDto dto)
+        public async Task<IActionResult> UpdateHoSo(int hsid, [FromForm] HoSoCreateDto dto)
         {
             if (!ModelState.IsValid)
             {
@@ -308,6 +303,50 @@ namespace TImViecAPI.Controllers
             };
 
             return File(fileBytes, contentType, Path.GetFileName(hoSo.ViTriFile));
+        }
+
+        [HttpGet("cua-toi")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> LayHoSoCuaToi()
+        {
+            // 1. LẤY USERNAME TỪ JWT
+            string? username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized(new { Message = "Vui lòng đăng nhập." });
+
+            // 2. TÌM NGƯỜI DÙNG TRONG BẢNG NguoiDung
+            var nguoiDung = _context.NguoiDung
+                .FirstOrDefault(nd => nd.tkName == username);
+
+            if (nguoiDung == null)
+                return Unauthorized(new { Message = "Ứng viên không tồn tại." });
+
+            int ungVienId = nguoiDung.tkid; // ← ĐÚNG: tkid = uvid
+
+            // 3. LẤY TẤT CẢ HỒ SƠ CỦA ỨNG VIÊN
+            var hoSoList = await _context.HoSo
+                .Where(h => h.ungvienID == ungVienId)
+                .Select(h => new
+                {
+                    HsId = h.hsid,
+                    HsName = h.hsName ?? "Chưa đặt tên",
+                    ViTriFile = h.ViTriFile != null
+                        ? $"/uploads/cv/{Path.GetFileName(h.ViTriFile)}"
+                        : null
+                    
+                })
+                .OrderByDescending(h => h.HsId)
+                .ToListAsync();
+
+            // 4. TRẢ VỀ KẾT QUẢ
+            return Ok(new
+            {
+                Message = "Lấy danh sách hồ sơ thành công!",
+                UngVienId = ungVienId,
+                TenDangNhap = nguoiDung.tkName,
+                TongSo = hoSoList.Count,
+                DanhSachHoSo = hoSoList
+            });
         }
 
     }

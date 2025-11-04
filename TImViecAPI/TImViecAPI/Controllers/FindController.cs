@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using TImViecAPI.Data;
 using TImViecAPI.Model;
-using TImViecAPI.Model.Dto;
 using TImViecAPI.Model_Function.Dtos;
 
 namespace TImViecAPI.Controllers

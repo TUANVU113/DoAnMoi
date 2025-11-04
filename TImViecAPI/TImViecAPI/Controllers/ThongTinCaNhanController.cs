@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TImViecAPI.Data;
-using TImViecAPI.DTO;
+using TImViecAPI.Model_Function.Dtos;
 using TImViecAPI.Model;
 
 namespace TImViecAPI.Controllers
