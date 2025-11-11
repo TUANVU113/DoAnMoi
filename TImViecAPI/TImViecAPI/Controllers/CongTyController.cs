@@ -133,6 +133,46 @@ namespace TImViecAPI.Controllers
             });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCongTyById(int id)
+        {
+            // 1. TÌM CÔNG TY THEO ID
+            var congTy = await _context.CongTy
+                .Where(ct => ct.ctid == id)
+                .Select(ct => new
+                {
+                    ct.ctid,
+                    ct.ctName,
+                    ct.DiaChi,
+                    ct.Logo,
+                    ct.MieuTa,
+                    ct.MoHinh,
+                    ct.SoNhanVien,
+                    ct.QuocGia,
+                    ct.NguoiLienHe,
+                    ct.sdtLienHe,
+                    ct.MaThue,
+                    ct.sdtCongTy
+                })
+                .FirstOrDefaultAsync();
+
+            // 2. KIỂM TRA KẾT QUẢ
+            if (congTy == null)
+            {
+                return NotFound(new
+                {
+                    Message = $"Không tìm thấy công ty với ID = {id}."
+                });
+            }
+
+            // 3. TRẢ VỀ THÀNH CÔNG
+            return Ok(new
+            {
+                Message = "Lấy thông tin công ty thành công!",
+                Data = congTy
+            });
+        }
+
         // PUT: api/congty/update/{id} - Sửa theo ctid
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateCongTy(int id, [FromBody] CongTyDto dto)

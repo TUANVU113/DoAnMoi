@@ -64,6 +64,36 @@ namespace TImViecAPI.Controllers
             });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetChucDanhById(int id)
+        {
+            // 1. TÌM CHỨC DANH THEO ID
+            var chucDanh = await _context.ChucDanh
+                .Where(cd => cd.cdid == id)
+                .Select(cd => new
+                {
+                    cd.cdid,
+                    cd.cdName
+                })
+                .FirstOrDefaultAsync();
+
+            // 2. KIỂM TRA KẾT QUẢ
+            if (chucDanh == null)
+            {
+                return NotFound(new
+                {
+                    Message = $"Không tìm thấy chức danh với ID = {id}."
+                });
+            }
+
+            // 3. TRẢ VỀ THÀNH CÔNG
+            return Ok(new
+            {
+                Message = "Lấy thông tin chức danh thành công!",
+                Data = chucDanh
+            });
+        }
+
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateChucDanh(int id, [FromBody] ChucDanhDto dto)
         {

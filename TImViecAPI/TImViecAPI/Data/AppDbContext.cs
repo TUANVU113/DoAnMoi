@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TImViecAPI.Model;
+using TImViecAPI.Models;
 
 namespace TImViecAPI.Data
 {
@@ -34,6 +35,7 @@ namespace TImViecAPI.Data
         public DbSet<UngVien_BaoCao> UngVien_BaoCao { get; set; }
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<ThongTinCaNhan> thongTinCaNhans { get; set; }
+        public DbSet<CongViecYeuThich> CongViecYeuThich { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -244,6 +246,21 @@ namespace TImViecAPI.Data
                 .HasForeignKey<ThongTinCaNhan>(tt => tt.ungvienID)  // Khóa ngoại ở ThongTinCaNhan
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // === CongViecYeuThich (Nhiều-đến-Nhiều: Ứng viên lưu nhiều tin, 1 tin được nhiều ứng viên lưu) ===
+            modelBuilder.Entity<CongViecYeuThich>()
+                .HasKey(cv => new { cv.ungvienID, cv.tintuyenID });
+
+            modelBuilder.Entity<CongViecYeuThich>()
+                .HasOne(cv => cv.UngVien)
+                .WithMany(uv => uv.CongViecYeuThichs) // ← Đảm bảo bạn có navigation này trong UngVien.cs
+                .HasForeignKey(cv => cv.ungvienID)
+                .OnDelete(DeleteBehavior.Cascade); // Xóa yêu thích nếu xóa ứng viên
+
+            modelBuilder.Entity<CongViecYeuThich>()
+                .HasOne(cv => cv.TinTuyenDung)
+                .WithMany(t => t.CongViecYeuThichs) // ← Đảm bảo bạn có navigation này trong TInTuyenDung.cs
+                .HasForeignKey(cv => cv.tintuyenID)
+                .OnDelete(DeleteBehavior.Cascade); // Xóa yêu thích nếu xóa tin
 
         }
     }

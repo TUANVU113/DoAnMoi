@@ -49,10 +49,7 @@ namespace TImViecAPI.Controllers
             }
 
             // === 2. LỌC THEO CÁC TRƯỜNG ===
-            if (dto.MinSalary.HasValue)
-                query = query.Where(t => t.YeuCau >= dto.MinSalary); // Giả sử YeuCau là lương min
-            if (dto.MaxSalary.HasValue)
-                query = query.Where(t => t.YeuCau <= dto.MaxSalary);
+          
 
             if (dto.LoaiHinhId.HasValue)
                 query = query.Where(t => t.loaihinhID == dto.LoaiHinhId);
@@ -102,8 +99,6 @@ namespace TImViecAPI.Controllers
                     Id = t.ttdid,
                     TieuDe = t.TieuDe ?? "Không có tiêu đề",
                     MieuTa = t.MieuTa != null && t.MieuTa.Length > 200 ? t.MieuTa.Substring(0, 200) + "..." : t.MieuTa ?? "",
-                    LuongMin = t.YeuCau,
-                    LuongMax = t.YeuCau,
                     TrangThai = t.TrangThai ?? "Đang tuyển",
                     NgayDang = t.NgayDang,
                     HanNop = t.HanNop,

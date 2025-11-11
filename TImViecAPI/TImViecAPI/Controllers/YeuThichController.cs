@@ -1,0 +1,123 @@
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Data;
+using TImViecAPI.Data;
+using TImViecAPI.Model_Function.Dtos;
+using TImViecAPI.Models;
+
+namespace TImViecAPI.Controllers
+{
+    [Route("api/[controller]")]
+    [ApiController]
+    [Authorize(Roles = "UngVien")]
+    public class YeuThichController : ControllerBase
+    {
+        private readonly AppDbContext _context;
+
+        public YeuThichController(AppDbContext context)
+        {
+            _context = context;
+        }
+        [HttpPost("luu-yeu-thich")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> LuuTinYeuThich([FromBody] LuuTinYeuThichDto dto)
+        {
+            // 1. LẤY ỨNG VIÊN TỪ JWT
+            string? username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("Vui lòng đăng nhập.");
+
+            var nguoiDung = _context.NguoiDung.FirstOrDefault(nd => nd.tkName == username);
+            if (nguoiDung == null)
+                return Unauthorized("Ứng viên không tồn tại.");
+
+            int ungVienId = nguoiDung.tkid;
+
+            // 2. KIỂM TRA TIN TUYỂN DỤNG
+            var tin = await _context.TInTuyenDung
+                .FirstOrDefaultAsync(t => t.ttdid == dto.TinTuyenDungId && t.DaDuyet == true);
+            if (tin == null)
+                return NotFound("Tin tuyển dụng không tồn tại hoặc chưa được duyệt.");
+
+            // 3. KIỂM TRA ĐÃ LƯU CHƯA
+            var daLuu = await _context.CongViecYeuThich
+                .AnyAsync(cv => cv.ungvienID == ungVienId && cv.tintuyenID == dto.TinTuyenDungId);
+            if (daLuu)
+                return Conflict("Tin này đã được lưu yêu thích rồi!");
+
+            // 4. TẠO BẢN GHI YÊU THÍCH – SỬA LỖI DateOnly
+            var yeuThich = new CongViecYeuThich
+            {
+                ungvienID = ungVienId,
+                tintuyenID = dto.TinTuyenDungId,
+                NgayThem = DateOnly.FromDateTime(DateTime.Now) // ← SỬA: DÙNG FromDateTime
+            };
+            _context.CongViecYeuThich.Add(yeuThich);
+            await _context.SaveChangesAsync();
+
+            // 5. TRẢ VỀ THÀNH CÔNG – SỬA LỖI ToString
+            return Ok(new
+            {
+                Message = "Lưu tin yêu thích thành công!",
+                UngVienId = yeuThich.ungvienID,
+                TinTuyenDungId = dto.TinTuyenDungId,
+                NgayThem = yeuThich.NgayThem?.ToString("dd/MM/yyyy"), // ← DateOnly hỗ trợ .ToString("format")
+                TieuDeTin = tin.TieuDe ?? "Tin tuyển dụng"
+            });
+        }
+        [HttpGet("yeu-thich-cua-toi")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> YeuThichCuaToi()
+        {
+            // 1. LẤY ỨNG VIÊN
+            string? username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized("Vui lòng đăng nhập.");
+
+            var nguoiDung = _context.NguoiDung.FirstOrDefault(nd => nd.tkName == username);
+            if (nguoiDung == null)
+                return Unauthorized("Ứng viên không tồn tại.");
+
+            int ungVienId = nguoiDung.tkid;
+
+            // 2. LẤY DANH SÁCH TIN YÊU THÍCH – CHỈ LẤY DỮ LIỆU GỐC
+            var yeuThich = await _context.CongViecYeuThich
+                .Where(cv => cv.ungvienID == ungVienId)
+                .Join(_context.TInTuyenDung,
+                      cv => cv.tintuyenID,
+                      tin => tin.ttdid,
+                      (cv, tin) => new
+                      {
+                          TinId = tin.ttdid,
+                          TieuDe = tin.TieuDe ?? "Tin tuyển dụng",
+                          NgayThem = cv.NgayThem, // ← Giữ nguyên DateOnly?
+                          CongTy = tin.NhaTuyenDung.CongTy.ctName ?? "Không rõ"
+                      })
+                .OrderByDescending(x => x.NgayThem) // ← Sắp xếp theo DateOnly (hợp lệ)
+                .ToListAsync();
+
+            // 3. FORMAT NGÀY Ở ĐÂY (SAU KHI LẤY DỮ LIỆU)
+            var ketQua = yeuThich.Select(x => new
+            {
+                x.TinId,
+                x.TieuDe,
+                NgayThem = x.NgayThem?.ToString("dd/MM/yyyy") ?? "Không rõ", // ← Format ở C#
+                x.CongTy
+            }).ToList();
+
+            // 4. TRẢ VỀ
+            return Ok(new
+            {
+                Message = ketQua.Any()
+                    ? "Lấy danh sách tin yêu thích thành công!"
+                    : "Bạn chưa lưu tin yêu thích nào.",
+                UngVienId = ungVienId,
+                TongSo = ketQua.Count,
+                DanhSachYeuThich = ketQua
+            });
+        }
+
+    }
+}

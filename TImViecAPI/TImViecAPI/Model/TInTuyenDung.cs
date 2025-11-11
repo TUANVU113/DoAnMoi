@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using TImViecAPI.Models;
 
 namespace TImViecAPI.Model
 {
@@ -20,7 +21,7 @@ namespace TImViecAPI.Model
         [StringLength(255)]
         public string? TrangThai { get; set; }
 
-        public int? YeuCau { get; set; }
+        public string? YeuCau { get; set; }
 
         public int? Tuoi { get; set; }
 
@@ -62,6 +63,7 @@ namespace TImViecAPI.Model
 
         [ForeignKey("nhaTuyenDungID")]
         public NhaTuyenDung? NhaTuyenDung { get; set; }
+        public ICollection<CongViecYeuThich> CongViecYeuThichs { get; set; } = new List<CongViecYeuThich>();
 
     }
 }

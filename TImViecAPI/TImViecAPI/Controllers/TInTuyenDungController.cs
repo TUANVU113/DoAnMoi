@@ -39,7 +39,7 @@ namespace TImViecAPI.Controllers
             [StringLength(255)]
             public string? TrangThai { get; set; }
 
-            public int? YeuCau { get; set; }
+            public string? YeuCau { get; set; }
 
             public int? Tuoi { get; set; }
 
