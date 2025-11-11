@@ -68,6 +68,37 @@ namespace TImViecAPI.Controllers
                 Data = linhVucs
             });
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetLinhVucById(int id)
+        {
+            // 1. TÌM LĨNH VỰC THEO ID
+            var linhVuc = await _context.LinhVuc
+                .Where(lv => lv.lvid == id)
+                .Select(lv => new
+                {
+                    lv.lvid,
+                    lv.lvName
+                })
+                .FirstOrDefaultAsync();
+
+            // 2. KIỂM TRA KẾT QUẢ
+            if (linhVuc == null)
+            {
+                return NotFound(new
+                {
+                    Message = $"Không tìm thấy lĩnh vực với ID = {id}."
+                });
+            }
+
+            // 3. TRẢ VỀ THÀNH CÔNG
+            return Ok(new
+            {
+                Message = "Lấy thông tin lĩnh vực thành công!",
+                Data = linhVuc
+            });
+        }
+
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateLinhVuc(int id, [FromBody] LinhVucDto dto)
         {

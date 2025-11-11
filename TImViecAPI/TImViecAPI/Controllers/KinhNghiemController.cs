@@ -64,6 +64,36 @@ namespace TImViecAPI.Controllers
             });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetKinhNghiemById(int id)
+        {
+            // 1. TÌM KINH NGHIỆM THEO ID
+            var kinhLaws = await _context.KinhNghiem
+                .Where(kn => kn.knid == id)
+                .Select(kn => new
+                {
+                    kn.knid,
+                    kn.knName
+                })
+                .FirstOrDefaultAsync();
+
+            // 2. KIỂM TRA KẾT QUẢ
+            if (kinhLaws == null)
+            {
+                return NotFound(new
+                {
+                    Message = $"Không tìm thấy kinh nghiệm với ID = {id}."
+                });
+            }
+
+            // 3. TRẢ VỀ THÀNH CÔNG
+            return Ok(new
+            {
+                Message = "Lấy thông tin kinh nghiệm thành công!",
+                Data = kinhLaws
+            });
+        }
+
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateKinhNghiem(int id, [FromBody] KinhNghiemDto dto)
         {

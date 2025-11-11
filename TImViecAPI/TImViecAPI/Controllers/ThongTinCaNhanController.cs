@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TImViecAPI.Data;
 using TImViecAPI.Model_Function.Dtos;
 using TImViecAPI.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace TImViecAPI.Controllers
 {
@@ -78,5 +79,62 @@ namespace TImViecAPI.Controllers
 
         //    return Ok(info);
         //}
+
+        [HttpGet("thong-bao-cua-toi")]
+        [Authorize]
+        public async Task<IActionResult> LayThongBaoCuaToi()
+        {
+            // 1. LẤY USERNAME TỪ JWT
+            string? username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
+                return Unauthorized(new { Message = "Vui lòng đăng nhập." });
+
+            // 2. TÌM NGƯỜI DÙNG
+            var nguoiDung = _context.NguoiDung
+                .FirstOrDefault(nd => nd.tkName == username);
+
+            if (nguoiDung == null)
+                return Unauthorized(new { Message = "Người dùng không tồn tại." });
+
+            int nguoiDungId = nguoiDung.tkid;
+
+            // 3. LẤY DANH SÁCH THÔNG BÁO (SẮP XẾP THEO NGÀY GỐC)
+            var danhSach = await _context.NguoiDung_ThongBao
+                .Where(ntb => ntb.nguoidungID == nguoiDungId)
+                .Join(
+                    _context.ThongBao,
+                    ntb => ntb.thongbaoID,
+                    tb => tb.tbid,
+                    (ntb, tb) => new { ntb, tb }
+                )
+                .OrderByDescending(x => x.tb.NgayBao) // ← SỬA Ở ĐÂY: SẮP XẾP THEO NGÀY GỐC
+                .Select(x => new
+                {
+                    ThongBaoId = x.tb.tbid,
+                    NoiDung = x.tb.NoiDung,
+                    NgayBao = x.tb.NgayBao, // ← Giữ nguyên DateOnly
+                    DaXem = x.ntb.DaXem
+                })
+                .ToListAsync();
+
+            // 4. FORMAT NGÀY Ở ĐÂY (SAU KHI LẤY DỮ LIỆU)
+            var ketQua = danhSach.Select(x => new
+            {
+                x.ThongBaoId,
+                x.NoiDung,
+                NgayBao = ((DateTime)x.NgayBao).ToString("dd/MM/yyyy"), // ← FORMAT Ở ĐÂY
+                x.DaXem
+            }).ToList();
+
+            // 5. TRẢ VỀ
+            return Ok(new
+            {
+                Message = ketQua.Any() ? "Lấy danh sách thông báo thành công!" : "Bạn chưa có thông báo nào.",
+                NguoiDungId = nguoiDungId,
+                TenDangNhap = nguoiDung.tkName,
+                TongSo = ketQua.Count,
+                DanhSachThongBao = ketQua
+            });
+        }
     }
 }

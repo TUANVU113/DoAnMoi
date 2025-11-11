@@ -47,6 +47,7 @@ namespace TImViecAPI.Controllers
             return Ok(new { Message = "Thêm loại hình thành công!", lhid = loaiHinh.lhid });
         }
 
+
         [HttpGet("list")]
         public async Task<IActionResult> GetAllLoaiHinhLamViec()
         {
@@ -61,6 +62,36 @@ namespace TImViecAPI.Controllers
             {
                 Message = "Lấy danh sách loại hình thành công!",
                 Data = loaiHinhs
+            });
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetLoaiHinhLamViecById(int id)
+        {
+            // 1. TÌM LOẠI HÌNH LÀM VIỆC THEO ID
+            var loaiHinh = await _context.LoaiHinhLamViec
+                .Where(lh => lh.lhid == id)
+                .Select(lh => new
+                {
+                    lh.lhid,
+                    lh.lhName
+                })
+                .FirstOrDefaultAsync();
+
+            // 2. KIỂM TRA KẾT QUẢ
+            if (loaiHinh == null)
+            {
+                return NotFound(new
+                {
+                    Message = $"Không tìm thấy loại hình làm việc với ID = {id}."
+                });
+            }
+
+            // 3. TRẢ VỀ THÀNH CÔNG
+            return Ok(new
+            {
+                Message = "Lấy thông tin loại hình làm việc thành công!",
+                Data = loaiHinh
             });
         }
 

@@ -64,6 +64,36 @@ namespace TImViecAPI.Controllers
             });
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetBangCapById(int id)
+        {
+            // 1. TÌM BẰNG CẤP THEO ID
+            var bangCap = await _context.BangCap
+                .Where(bc => bc.bcid == id)
+                .Select(bc => new
+                {
+                    bc.bcid,
+                    bc.bcName
+                })
+                .FirstOrDefaultAsync();
+
+            // 2. KIỂM TRA KẾT QUẢ
+            if (bangCap == null)
+            {
+                return NotFound(new
+                {
+                    Message = $"Không tìm thấy bằng cấp với ID = {id}."
+                });
+            }
+
+            // 3. TRẢ VỀ THÀNH CÔNG
+            return Ok(new
+            {
+                Message = "Lấy thông tin bằng cấp thành công!",
+                Data = bangCap
+            });
+        }
+
         [HttpPut("update/{id}")]
         public async Task<IActionResult> UpdateBangCap(int id, [FromBody] BangCapDto dto)
         {
