@@ -106,8 +106,10 @@ namespace TImViecAPI.Controllers
                     TenCongTy = t.NhaTuyenDung != null && t.NhaTuyenDung.CongTy != null
                     ? t.NhaTuyenDung.CongTy.ctName
                     : "Không rõ",
-
-                   LoaiHinh = t.LoaiHinhLamViec != null
+                    Logo = t.NhaTuyenDung != null && t.NhaTuyenDung.CongTy != null
+        ? t.NhaTuyenDung.CongTy.Logo
+        : null,
+                    LoaiHinh = t.LoaiHinhLamViec != null
                     ? t.LoaiHinhLamViec.lhName
                     : "Không xác định",
 

@@ -270,26 +270,65 @@ namespace TImViecAPI.Controllers
         }
 
 
+        //[HttpGet("view/{hsid}")]
+        //[Authorize(Roles = "UngVien")]
+        //public async Task<IActionResult> ViewHoSo(int hsid)
+        //{
+        //    string username = User.Identity?.Name;
+        //    if (string.IsNullOrEmpty(username))
+        //        return Unauthorized(new { Message = "Người dùng không hợp lệ hoặc chưa đăng nhập." });
+
+        //    var ungVien = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+        //    if (ungVien == null)
+        //        return Unauthorized(new { Message = "Không tìm thấy thông tin ứng viên." });
+
+        //    // Tìm hồ sơ của người này
+        //    var hoSo = await _context.HoSo.FirstOrDefaultAsync(h => h.hsid == hsid && h.ungvienID == ungVien.tkid);
+        //    if (hoSo == null)
+        //        return NotFound(new { Message = "Hồ sơ không tồn tại hoặc không thuộc về bạn." });
+
+        //    // Kiểm tra file tồn tại
+        //    if (!System.IO.File.Exists(hoSo.ViTriFile))
+        //        return NotFound(new { Message = "File không tồn tại trên máy chủ." });
+
+        //    var fileBytes = await System.IO.File.ReadAllBytesAsync(hoSo.ViTriFile);
+        //    var fileExtension = Path.GetExtension(hoSo.ViTriFile).ToLower();
+
+        //    string contentType = fileExtension switch
+        //    {
+        //        ".pdf" => "application/pdf",
+        //        ".doc" => "application/msword",
+        //        ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        //        _ => "application/octet-stream"
+        //    };
+
+        //    return File(fileBytes, contentType, Path.GetFileName(hoSo.ViTriFile));
+        //}
+
         [HttpGet("view/{hsid}")]
-        [Authorize(Roles = "UngVien")]
+        [Authorize(Roles = "UngVien,NhaTuyenDung,Admin")]
         public async Task<IActionResult> ViewHoSo(int hsid)
         {
-            string username = User.Identity?.Name;
+            var username = User.Identity?.Name;
             if (string.IsNullOrEmpty(username))
                 return Unauthorized(new { Message = "Người dùng không hợp lệ hoặc chưa đăng nhập." });
 
-            var ungVien = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
-            if (ungVien == null)
-                return Unauthorized(new { Message = "Không tìm thấy thông tin ứng viên." });
+            var nguoiDung = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (nguoiDung == null)
+                return Unauthorized(new { Message = "Không tìm thấy người dùng." });
 
-            // Tìm hồ sơ của người này
-            var hoSo = await _context.HoSo.FirstOrDefaultAsync(h => h.hsid == hsid && h.ungvienID == ungVien.tkid);
+            var hoSo = await _context.HoSo.FirstOrDefaultAsync(h => h.hsid == hsid);
+
             if (hoSo == null)
-                return NotFound(new { Message = "Hồ sơ không tồn tại hoặc không thuộc về bạn." });
+                return NotFound(new { Message = "Không tìm thấy hồ sơ." });
 
-            // Kiểm tra file tồn tại
+            // 🔐 Nếu là ứng viên thì chỉ được xem hồ sơ của chính mình
+            if (User.IsInRole("UngVien") && hoSo.ungvienID != nguoiDung.tkid)
+                return Forbid();
+
+            // 🗂 Đọc file
             if (!System.IO.File.Exists(hoSo.ViTriFile))
-                return NotFound(new { Message = "File không tồn tại trên máy chủ." });
+                return NotFound(new { Message = "File không tồn tại." });
 
             var fileBytes = await System.IO.File.ReadAllBytesAsync(hoSo.ViTriFile);
             var fileExtension = Path.GetExtension(hoSo.ViTriFile).ToLower();

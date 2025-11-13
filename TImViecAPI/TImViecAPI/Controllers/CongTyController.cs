@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
 using TImViecAPI.Data;
 using TImViecAPI.Model;
 using TImViecAPI.Model_Function.Dtos;
@@ -251,5 +252,60 @@ namespace TImViecAPI.Controllers
                 return StatusCode(500, new { Message = "Lỗi khi xóa: " + ex.Message });
             }
         }
+
+
+        [HttpPost("upload-logo")]
+        public async Task<IActionResult> UploadLogo([FromForm] IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+                return BadRequest(new { Message = "Không có file nào được upload." });
+
+            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Upload");
+
+            if (!Directory.Exists(uploadsFolder))
+                Directory.CreateDirectory(uploadsFolder);
+
+            var uniqueFileName = Guid.NewGuid() + Path.GetExtension(file.FileName);
+            var filePath = Path.Combine(uploadsFolder, uniqueFileName);
+
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Trả về URL mà frontend có thể dùng
+            var url = $"/Upload/{uniqueFileName}";
+            return Ok(new { Url = url });  // ✅ phải là "Url"
+        }
+
+        [HttpGet("logo/{filename}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ViewLogo(string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+                return BadRequest(new { Message = "Tên file không hợp lệ." });
+
+            // Đường dẫn file logo trong folder Upload
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", filename);
+
+            if (!System.IO.File.Exists(filePath))
+                return NotFound(new { Message = "File logo không tồn tại." });
+
+            // Xác định content type dựa theo phần mở rộng
+            var fileExtension = Path.GetExtension(filePath).ToLower();
+            string contentType = fileExtension switch
+            {
+                ".jpg" or ".jpeg" => "image/jpeg",
+                ".png" => "image/png",
+                ".gif" => "image/gif",
+                _ => "application/octet-stream"
+            };
+
+            // Trả file kèm content type
+            var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
+            return File(fileBytes, contentType, Path.GetFileName(filePath));
+        }
+
+
     }
 }

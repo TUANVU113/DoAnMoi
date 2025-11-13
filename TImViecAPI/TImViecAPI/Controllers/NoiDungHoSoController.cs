@@ -46,6 +46,15 @@ namespace TImViecAPI.Controllers
                 Tinh = noiDungHoSoDto.Tinh,
                 QuanHuyen = noiDungHoSoDto.QuanHuyen,
                 DiaChi = noiDungHoSoDto.DiaChi,
+
+                //noiDungHoSoDto.Tinh = noiDungHoSoDto.Tinh;
+                //noiDungHoSoDto.QuanHuyen = noiDungHoSoDto.QuanHuyen;
+                //noiDungHoSoDto.DiaChi = noiDungHoSoDto.DiaChi;
+
+                //noiDungHoSo.Tinh = noiDungHoSoDto.Tinh;
+                //noiDungHoSo.QuanHuyen = noiDungHoSoDto.QuanHuyen;
+                //noiDungHoSo.DiaChi = noiDungHoSoDto.DiaChi;
+
                 HocVan = noiDungHoSoDto.HocVan,
                 hosoID = noiDungHoSoDto.HosoID
             };

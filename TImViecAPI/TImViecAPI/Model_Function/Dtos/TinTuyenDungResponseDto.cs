@@ -13,6 +13,7 @@
 
         // Thông tin liên quan
         public string? TenCongTy { get; set; }
+        public string? Logo { get; set; }
         public string? LoaiHinh { get; set; }
         public string? ChucDanh { get; set; }
         public string? KinhNghiem { get; set; }

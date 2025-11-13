@@ -45,9 +45,9 @@ namespace TImViecAPI.Model_Function.Dtos
         [StringLength(255, ErrorMessage = "Nơi sinh không được vượt quá 255 ký tự")]
         public string? NoiSinh { get; set; }
 
-        [Required(ErrorMessage = "ID ứng viên là bắt buộc")]
-        [Range(1, int.MaxValue, ErrorMessage = "ID ứng viên phải lớn hơn 0")]
-        public int ungvienID { get; set; }
+        //[Required(ErrorMessage = "ID ứng viên là bắt buộc")]
+        //[Range(1, int.MaxValue, ErrorMessage = "ID ứng viên phải lớn hơn 0")]
+        //public int ungvienID { get; set; }
 
         // RÀNG BUỘC TÙY CHỈNH: Tuổi >= 18 + SĐT đúng 10 chữ số
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)

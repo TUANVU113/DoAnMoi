@@ -167,7 +167,15 @@ namespace TImViecAPI.Controllers
                 .FirstOrDefaultAsync(uv => uv.uvid == nguoiDung.tkid);
             var role = nhaTuyenDung != null ? "NhaTuyenDung" : (ungVien != null ? "UngVien" : "Admin");
 
-          
+            int? ctID = null;
+            string? ntdName = null;
+
+            if (nhaTuyenDung != null)
+            {
+                ctID = nhaTuyenDung.ctID;     // ID công ty
+                ntdName = nhaTuyenDung.ntdName; // Tên NTD
+            }
+
             var claims = new List<Claim>
             {
                     new Claim(ClaimTypes.NameIdentifier, nguoiDung.tkid.ToString()),
@@ -205,7 +213,11 @@ namespace TImViecAPI.Controllers
                 TkId = nguoiDung.tkid,
                 TkName = nguoiDung.tkName,
                 Role = role,
-                Token = tokenString  // Trả JWT cho client
+
+                CtID = ctID,
+                NtdName = ntdName,
+                Token = tokenString
+
             });
         }
         [HttpPost("register-ntd")]

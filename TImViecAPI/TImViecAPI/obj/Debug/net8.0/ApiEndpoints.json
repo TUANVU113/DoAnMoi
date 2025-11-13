@@ -217,6 +217,22 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.CongTyController",
+    "Method": "ViewLogo",
+    "RelativePath": "api/CongTy/logo/{filename}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "filename",
+        "Type": "System.String",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.CongTyController",
     "Method": "UpdateCongTy",
     "RelativePath": "api/CongTy/update/{id}",
     "HttpMethod": "PUT",
@@ -232,6 +248,47 @@
         "Name": "dto",
         "Type": "TImViecAPI.Controllers.CongTyController\u002BCongTyDto",
         "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.CongTyController",
+    "Method": "UploadLogo",
+    "RelativePath": "api/CongTy/upload-logo",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "ContentType",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ContentDisposition",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Headers",
+        "Type": "Microsoft.AspNetCore.Http.IHeaderDictionary",
+        "IsRequired": false
+      },
+      {
+        "Name": "Length",
+        "Type": "System.Int64",
+        "IsRequired": false
+      },
+      {
+        "Name": "Name",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "FileName",
+        "Type": "System.String",
+        "IsRequired": false
       }
     ],
     "ReturnTypes": []
@@ -827,12 +884,38 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.ThongTinCaNhanController",
+    "Method": "GetMyThongTin",
+    "RelativePath": "api/ThongTinCaNhan/me",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.ThongTinCaNhanController",
     "Method": "LayThongBaoCuaToi",
     "RelativePath": "api/ThongTinCaNhan/thong-bao-cua-toi",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.ThongTinCaNhanController",
+    "Method": "UpdateThongTin",
+    "RelativePath": "api/ThongTinCaNhan/update",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.Model_Function.Dtos.ThongTinCaNhanCreateDto",
+        "IsRequired": true
+      }
+    ],
     "ReturnTypes": []
   },
   {
@@ -959,6 +1042,22 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.TInTuyenDungController",
+    "Method": "DuyetNhanh",
+    "RelativePath": "api/TInTuyenDung/duyet-nhanh",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.Controllers.TInTuyenDungController\u002BDuyetNhanhDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.TInTuyenDungController",
     "Method": "GetAllTInTuyenDung",
     "RelativePath": "api/TInTuyenDung/list",
     "HttpMethod": "GET",
@@ -1026,6 +1125,22 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.ViTriController",
+    "Method": "GetById",
+    "RelativePath": "api/ViTri/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.ViTriController",
     "Method": "Add",
     "RelativePath": "api/ViTri/add",
     "HttpMethod": "POST",
@@ -1082,6 +1197,22 @@
       {
         "Name": "dto",
         "Type": "TImViecAPI.Controllers.ViTriController\u002BViTriDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.YeuThichController",
+    "Method": "CheckYeuThich",
+    "RelativePath": "api/YeuThich/check/{tinId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tinId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
