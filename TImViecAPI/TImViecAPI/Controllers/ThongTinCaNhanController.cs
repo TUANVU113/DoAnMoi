@@ -136,5 +136,51 @@ namespace TImViecAPI.Controllers
                 DanhSachThongBao = ketQua
             });
         }
+
+
+        // GET: api/thongtincanhan/me
+        [HttpGet("me")]
+        [Authorize(Roles = "UngVien")]
+        public ActionResult GetMyThongTin()
+        {
+            string username = User.Identity?.Name;
+            if (username == null) return Unauthorized();
+
+            var ungVien = _context.NguoiDung.FirstOrDefault(u => u.tkName == username);
+            if (ungVien == null) return NotFound(new { message = "Ứng viên không tồn tại" });
+
+            var thongTin = _context.thongTinCaNhans.FirstOrDefault(t => t.ungvienID == ungVien.tkid);
+            if (thongTin == null) return Ok(null); // chưa có thông tin
+
+            return Ok(thongTin);
+        }
+
+        // PUT: api/thongtincanhan/update
+        [HttpPut("update")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<ActionResult> UpdateThongTin(ThongTinCaNhanCreateDto dto)
+        {
+            string username = User.Identity?.Name;
+            if (username == null) return Unauthorized();
+
+            var ungVien = _context.NguoiDung.FirstOrDefault(u => u.tkName == username);
+            var thongTin = _context.thongTinCaNhans.FirstOrDefault(t => t.ungvienID == ungVien.tkid);
+            if (thongTin == null) return NotFound(new { message = "Không tìm thấy thông tin để cập nhật" });
+
+            thongTin.HoVaTen = dto.HoVaTen;
+            thongTin.GioiTinh = dto.GioiTinh;
+            thongTin.NgaySinh = dto.NgaySinh;
+            thongTin.SDT = dto.SDT;
+            thongTin.Email = dto.Email;
+            thongTin.QuocGia = dto.QuocGia;
+            thongTin.Tinh = dto.Tinh;
+            thongTin.Huyen = dto.Huyen;
+            thongTin.DiaChi = dto.DiaChi;
+            thongTin.CCCD = dto.CCCD;
+            thongTin.NoiSinh = dto.NoiSinh;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Cập nhật thành công" });
+        }
     }
 }

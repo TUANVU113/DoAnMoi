@@ -214,8 +214,10 @@ namespace TImViecAPI.Controllers
         public async Task<IActionResult> GetAllTInTuyenDung()
         {
             var tins = await _context.TInTuyenDung
-                .Select(ttd => new
-                {
+                .Include(ttd => ttd.NhaTuyenDung)
+         .ThenInclude(ntd => ntd.CongTy)
+     .Select(ttd => new
+     {
                     ttd.ttdid,
                     ttd.TieuDe,
                     ttd.MieuTa,
@@ -231,7 +233,9 @@ namespace TImViecAPI.Controllers
                     ttd.bangcapID,
                     ttd.linhvucIID,
                     ttd.vitriID,
-                    ttd.nhaTuyenDungID
+                    ttd.NhaTuyenDung.CongTy.ctName,
+                    ttd.nhaTuyenDungID,
+                    Logo = ttd.NhaTuyenDung.CongTy.Logo
                 })
                 .ToListAsync();
             if (!tins.Any())
@@ -416,7 +420,8 @@ namespace TImViecAPI.Controllers
         {
             // 1. Kiểm tra NTD + tin
             var ntd = await _context.NhaTuyenDung
-                .FirstOrDefaultAsync(n => n.ntdName == User.Identity.Name);
+                 .Include(n => n.NguoiDung)
+     .FirstOrDefaultAsync(n => n.NguoiDung.tkName == User.Identity.Name);
             if (ntd == null) return Unauthorized("NTD không tồn tại.");
 
             var tin = await _context.TInTuyenDung
@@ -454,7 +459,8 @@ namespace TImViecAPI.Controllers
         {
             // 1. Kiểm tra NTD
             var ntd = await _context.NhaTuyenDung
-                .FirstOrDefaultAsync(n => n.ntdName == User.Identity.Name);
+                 .Include(n => n.NguoiDung)
+     .FirstOrDefaultAsync(n => n.NguoiDung.tkName == User.Identity.Name);
             if (ntd == null) return Unauthorized("NTD không tồn tại.");
 
             // 2. Lấy đơn ứng tuyển + kiểm tra quyền (tin phải thuộc NTD)
@@ -508,7 +514,7 @@ namespace TImViecAPI.Controllers
                     HoSoId = data.h.hsid,
                     HoSoName = data.h.hsName ?? "Chưa đặt tên",
                     FileUrl = data.h.ViTriFile != null
-                        ? $"/uploads/cv/{Path.GetFileName(data.h.ViTriFile)}"
+                        ? $"/Upload/{Path.GetFileName(data.h.ViTriFile)}"
                         : null
                 }
             };
@@ -522,10 +528,12 @@ namespace TImViecAPI.Controllers
         {
             // 1. LẤY NTD TỪ User.Identity.Name (ntdName == tkName)
             var ntd = await _context.NhaTuyenDung
-                .FirstOrDefaultAsync(n => n.ntdName == User.Identity.Name);
+                .Include(n => n.NguoiDung)
+                .FirstOrDefaultAsync(n => n.NguoiDung.tkName == User.Identity.Name);
+
 
             if (ntd == null)
-                return Unauthorized("Nhà tuyển dụng không tồn tại.");
+                return Unauthorized(new { message = "Nhà tuyển dụng không tồn tại." });
 
             // 2. LẤY ĐƠN ỨNG TUYỂN + KIỂM TRA QUYỀN (tin phải thuộc NTD)
             var don = await _context.UngTuyen
@@ -533,7 +541,7 @@ namespace TImViecAPI.Controllers
                 .FirstOrDefaultAsync(ut => ut.utid == utid && ut.TInTuyenDung!.nhaTuyenDungID == ntd.ntdid);
 
             if (don == null)
-                return NotFound("Đơn ứng tuyển không tồn tại hoặc không thuộc về bạn.");
+                return NotFound(new { message = "Đơn ứng tuyển không tồn tại hoặc không thuộc về bạn." });
 
             // 3. CẬP NHẬT TRẠNG THÁI
             don.TrangThai = dto.TrangThai;
@@ -592,5 +600,94 @@ namespace TImViecAPI.Controllers
             });
         }
 
+        public class DuyetNhanhDto
+        {
+            public List<int> UtidList { get; set; } = new();
+            public string TrangThai { get; set; } = "";
+        }
+
+        [HttpPut("duyet-nhanh")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<IActionResult> DuyetNhanh([FromBody] DuyetNhanhDto dto)
+        {
+            if (dto.UtidList == null || dto.UtidList.Count == 0)
+                return BadRequest(new { message = "Danh sách đơn ứng tuyển trống." });
+
+            // 1. KIỂM TRA NTD
+            var ntd = await _context.NhaTuyenDung
+                .Include(n => n.NguoiDung)
+                .FirstOrDefaultAsync(n => n.NguoiDung.tkName == User.Identity.Name);
+
+            if (ntd == null)
+                return Unauthorized(new { message = "Nhà tuyển dụng không tồn tại." });
+
+            // 2. LẤY CÁC ĐƠN ỨNG TUYỂN THUỘC NTD
+            var dons = await _context.UngTuyen
+                .Include(ut => ut.TInTuyenDung)
+                .Where(ut => dto.UtidList.Contains(ut.utid)
+                          && ut.TInTuyenDung!.nhaTuyenDungID == ntd.ntdid)
+                .ToListAsync();
+
+            if (dons.Count == 0)
+                return NotFound(new { message = "Không tìm thấy đơn ứng tuyển hợp lệ." });
+
+            List<object> result = new();
+
+            foreach (var don in dons)
+            {
+                // 3. Cập nhật trạng thái
+                don.TrangThai = dto.TrangThai;
+
+                // 4. Lấy ứng viên
+                var ungVienId = await _context.UngVien_UngTuyen
+                    .Where(uu => uu.ungtuyenID == don.utid)
+                    .Select(uu => uu.ungvienID)
+                    .FirstOrDefaultAsync();
+
+                // 5. Tạo thông báo
+                string tieuDeTin = don.TInTuyenDung?.TieuDe ?? "Tin tuyển dụng";
+
+                string noiDung = dto.TrangThai switch
+                {
+                    "Đã duyệt" => $"Chúc mừng! Đơn ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã được **duyệt**.",
+                    "Từ chối" => $"Rất tiếc, đơn ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã bị **từ chối**.",
+                    "Phỏng vấn" => $"Bạn đã được mời **phỏng vấn** cho tin **\"{tieuDeTin}\"**.",
+                    _ => $"Trạng thái ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã được cập nhật thành: **{dto.TrangThai}**."
+                };
+
+                var thongBao = new ThongBao
+                {
+                    NoiDung = noiDung,
+                    NgayBao = DateTime.Now.Date
+                };
+
+                _context.ThongBao.Add(thongBao);
+                await _context.SaveChangesAsync();
+
+                if (ungVienId != 0)
+                {
+                    _context.NguoiDung_ThongBao.Add(new NguoiDung_ThongBao
+                    {
+                        nguoidungID = ungVienId,
+                        thongbaoID = thongBao.tbid,
+                        DaXem = false
+                    });
+                }
+
+                result.Add(new
+                {
+                    DonUngTuyenId = don.utid,
+                    TrangThaiMoi = dto.TrangThai
+                });
+            }
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                Message = "Duyệt nhanh thành công!",
+                KetQua = result
+            });
+        }
     }
 }

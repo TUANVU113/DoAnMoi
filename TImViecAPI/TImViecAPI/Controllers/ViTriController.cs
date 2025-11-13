@@ -117,5 +117,30 @@ namespace TImViecAPI.Controllers
                 return StatusCode(500, new { Message = "Lỗi khi xóa: " + ex.Message });
             }
         }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var viTri = await _context.ViTri
+                .Where(v => v.vtid == id)
+                .Select(v => new
+                {
+                    v.vtid,
+                    v.vtName
+                })
+                .FirstOrDefaultAsync();
+
+            if (viTri == null)
+            {
+                return NotFound(new { message = "Không tìm thấy vị trí." });
+            }
+
+            return Ok(new
+            {
+                message = "Lấy thông tin vị trí thành công!",
+                data = viTri
+            });
+        }
+
     }
 }
