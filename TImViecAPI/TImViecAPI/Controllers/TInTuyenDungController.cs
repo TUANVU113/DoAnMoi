@@ -457,13 +457,11 @@ namespace TImViecAPI.Controllers
         [Authorize(Roles = "NhaTuyenDung")]
         public async Task<IActionResult> ChiTietDonUngTuyen(int utid)
         {
-            // 1. Kiểm tra NTD
             var ntd = await _context.NhaTuyenDung
-                 .Include(n => n.NguoiDung)
-     .FirstOrDefaultAsync(n => n.NguoiDung.tkName == User.Identity.Name);
+                .Include(n => n.NguoiDung)
+                .FirstOrDefaultAsync(n => n.NguoiDung.tkName == User.Identity.Name);
             if (ntd == null) return Unauthorized("NTD không tồn tại.");
 
-            // 2. Lấy đơn ứng tuyển + kiểm tra quyền (tin phải thuộc NTD)
             var don = await _context.UngTuyen
                 .Where(ut => ut.utid == utid)
                 .Join(_context.TInTuyenDung,
@@ -471,30 +469,29 @@ namespace TImViecAPI.Controllers
                       tin => tin.ttdid,
                       (ut, tin) => new { ut, tin.nhaTuyenDungID })
                 .FirstOrDefaultAsync();
-
             if (don == null) return NotFound("Đơn ứng tuyển không tồn tại.");
             if (don.nhaTuyenDungID != ntd.ntdid) return Forbid("Bạn không có quyền xem đơn này.");
 
-            // 3. Lấy dữ liệu chi tiết
+            // SỬA TẠI ĐÂY: Include NoiDungHoSo
             var data = await (
                 from ut in _context.UngTuyen.Where(ut => ut.utid == utid)
                 join uu in _context.UngVien_UngTuyen on ut.utid equals uu.ungtuyenID
                 join uv in _context.UngVien.Include(u => u.ThongTinCaNhan) on uu.ungvienID equals uv.uvid
                 join hu in _context.HoSo_UngTuyen on ut.utid equals hu.ungtuyenID
-                join h in _context.HoSo on hu.hosoID equals h.hsid
+                join h in _context.HoSo.Include(h => h.NoiDungHoSo) on hu.hosoID equals h.hsid
                 select new { ut, uv, h }
             ).FirstOrDefaultAsync();
 
-            if (data == null) return NotFound("Không tìm thấy thông tin ứng viên hoặc hồ sơ.");
+            //if (data == null || data.h.NoiDungHoSo == null)
+            //    return NotFound("Không tìm thấy nội dung CV.");
 
-            // 4. Chuyển sang DTO
             var result = new ChiTietUngVienDto
             {
                 DonUngTuyenId = data.ut.utid,
                 NgayNop = data.ut.NgayNop?.ToString("dd/MM/yyyy HH:mm") ?? "Không xác định",
                 TrangThai = data.ut.TrangThai ?? "Đang chờ duyệt",
 
-                ThongTinCaNhan = new TImViecAPI.Model_Function.Dtos.ThongTinCaNhanDto
+                ThongTinCaNhan = new ThongTinCaNhanDto
                 {
                     HoVaTen = data.uv.ThongTinCaNhan?.HoVaTen ?? "Chưa cung cấp",
                     GioiTinh = data.uv.ThongTinCaNhan?.GioiTinh ?? "Chưa cung cấp",
@@ -509,14 +506,33 @@ namespace TImViecAPI.Controllers
                     NoiSinh = data.uv.ThongTinCaNhan?.NoiSinh ?? "Chưa cung cấp"
                 },
 
-                HoSo = new TImViecAPI.Model_Function.Dtos.HoSoDto
+                HoSoFile = new HoSoDto
                 {
                     HoSoId = data.h.hsid,
-                    HoSoName = data.h.hsName ?? "Chưa đặt tên",
-                    FileUrl = data.h.ViTriFile != null
-                        ? $"/Upload/{Path.GetFileName(data.h.ViTriFile)}"
-                        : null
-                }
+                    HoSoName = data.h.hsName ?? "CV Tải Lên",
+                    FileUrl = data.h.ViTriFile != null ? $"/Upload/{Path.GetFileName(data.h.ViTriFile)}" : null
+                },
+
+                // BÂY GIỜ CÓ DỮ LIỆU THẬT
+                HoSoChiTiet = data.h.ViTriFile == null ? new HoSoDetailDto
+                {
+                    HoSoId = data.h.hsid,
+                    HoSoName = data.h.hsName ?? "CV Tạo Nhanh",
+                    TenUngVien = data.h.NoiDungHoSo.TenUngVien ?? "Chưa cung cấp",
+                    Avata = data.h.NoiDungHoSo.Avata,
+                    PhoneHoSo = data.h.NoiDungHoSo.PhoneHoSo ?? "Chưa cung cấp",
+                    MailHoSo = data.h.NoiDungHoSo.MailHoSo ?? "Chưa cung cấp",
+                    HocVan = data.h.NoiDungHoSo.HocVan,
+                    NamKinhNghiemID = data.h.NoiDungHoSo.NamKinhNghiemID,
+                    MucLuong = data.h.NoiDungHoSo.MucLuong,
+                    ChucDanhID = data.h.NoiDungHoSo.ChucDanhID,
+                    LoaiHinhLamViecID = data.h.NoiDungHoSo.LoaiHinhLamViecID,
+                    LinhVucID = data.h.NoiDungHoSo.LinhVucID,
+                    ViTriLamViecID = data.h.NoiDungHoSo.ViTriLamViecID,
+                    MucTieu = data.h.NoiDungHoSo.MucTieu,
+                    ChucChi = data.h.NoiDungHoSo.ChucChi,
+                    KyNang = data.h.NoiDungHoSo.KyNang
+                } : null
             };
 
             return Ok(result);

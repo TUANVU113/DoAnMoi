@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TImViecAPI.Data;
 
@@ -11,9 +12,11 @@ using TImViecAPI.Data;
 namespace TImViecAPI.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251115090903_Add_ID_Fields_To_NoiDungHoSo")]
+    partial class Add_ID_Fields_To_NoiDungHoSo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -351,9 +354,6 @@ namespace TImViecAPI.Migrations
                     b.Property<string>("HocVan")
                         .HasColumnType("longtext");
 
-                    b.Property<string>("KyNang")
-                        .HasColumnType("longtext");
-
                     b.Property<int?>("LinhVucID")
                         .HasColumnType("int");
 
@@ -399,8 +399,7 @@ namespace TImViecAPI.Migrations
 
                     b.HasIndex("ViTriLamViecID");
 
-                    b.HasIndex("hosoID")
-                        .IsUnique();
+                    b.HasIndex("hosoID");
 
                     b.ToTable("NoiDungHoSo");
                 });
@@ -868,8 +867,8 @@ namespace TImViecAPI.Migrations
                         .HasConstraintName("FK_NoiDungHoSo_ViTri");
 
                     b.HasOne("TImViecAPI.Model.HoSo", "HoSo")
-                        .WithOne("NoiDungHoSo")
-                        .HasForeignKey("TImViecAPI.Model.NoiDungHoSo", "hosoID")
+                        .WithMany()
+                        .HasForeignKey("hosoID")
                         .OnDelete(DeleteBehavior.Cascade)
                         .HasConstraintName("FK_NoiDungHoSo_HoSo");
 
@@ -1084,11 +1083,6 @@ namespace TImViecAPI.Migrations
                     b.Navigation("TinTuyenDung");
 
                     b.Navigation("UngVien");
-                });
-
-            modelBuilder.Entity("TImViecAPI.Model.HoSo", b =>
-                {
-                    b.Navigation("NoiDungHoSo");
                 });
 
             modelBuilder.Entity("TImViecAPI.Model.NhaTuyenDung", b =>

@@ -194,12 +194,61 @@ namespace TImViecAPI.Data
                 .HasForeignKey(t => t.ungtuyenID)
                 .OnDelete(DeleteBehavior.NoAction);
 
-            // NoiDungHoSo - HoSo (Nhiều-đến-Một)
-            modelBuilder.Entity<NoiDungHoSo>()
-                .HasOne(nd => nd.HoSo)
-                .WithMany()
-                .HasForeignKey(nd => nd.hosoID)
-                .OnDelete(DeleteBehavior.NoAction);
+            // === NoiDungHoSo - HoSo (Nhiều-đến-Một) ===
+          
+            // SỬA LỖI JOIN SAI: HOÀN CHỈNH QUAN HỆ 1-1
+            modelBuilder.Entity<HoSo>()
+                .HasOne(h => h.NoiDungHoSo)
+                .WithOne(nd => nd.HoSo)
+                .HasForeignKey<NoiDungHoSo>(nd => nd.hosoID)
+                .HasConstraintName("FK_NoiDungHoSo_HoSo")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // === NoiDungHoSo - CÁC KHÓA NGOẠI MỚI (THÊM MỚI) ===
+            modelBuilder.Entity<NoiDungHoSo>(entity =>
+            {
+                entity.HasKey(e => e.ndid);
+
+                entity.Property(e => e.TenUngVien).HasMaxLength(255);
+                entity.Property(e => e.PhoneHoSo).HasMaxLength(255);
+                entity.Property(e => e.MailHoSo).HasMaxLength(255);
+                entity.Property(e => e.Avata).HasMaxLength(255);
+
+                // LinhVuc
+                entity.HasOne(nd => nd.LinhVuc)
+                      .WithMany()
+                      .HasForeignKey(nd => nd.LinhVucID)
+                      .OnDelete(DeleteBehavior.SetNull)
+                      .HasConstraintName("FK_NoiDungHoSo_LinhVuc");
+
+                // LoaiHinhLamViec
+                entity.HasOne(nd => nd.LoaiHinhLamViec)
+                      .WithMany()
+                      .HasForeignKey(nd => nd.LoaiHinhLamViecID)
+                      .OnDelete(DeleteBehavior.SetNull)
+                      .HasConstraintName("FK_NoiDungHoSo_LoaiHinhLamViec");
+
+                // ChucDanh
+                entity.HasOne(nd => nd.ChucDanh)
+                      .WithMany()
+                      .HasForeignKey(nd => nd.ChucDanhID)
+                      .OnDelete(DeleteBehavior.SetNull)
+                      .HasConstraintName("FK_NoiDungHoSo_ChucDanh");
+
+                // ViTriLamViec
+                entity.HasOne(nd => nd.ViTriLamViec)
+                      .WithMany()
+                      .HasForeignKey(nd => nd.ViTriLamViecID)
+                      .OnDelete(DeleteBehavior.SetNull)
+                      .HasConstraintName("FK_NoiDungHoSo_ViTri");
+
+                // NamKinhNghiemID → KinhNghiem
+                entity.HasOne(nd => nd.KinhNghiem)
+                      .WithMany()
+                      .HasForeignKey(nd => nd.NamKinhNghiemID)
+                      .OnDelete(DeleteBehavior.SetNull)
+                      .HasConstraintName("FK_NoiDungHoSo_KinhNghiem");
+            });
 
             // NoiDung_KinhNghiem (Nhiều-đến-Nhiều)
             modelBuilder.Entity<NoiDung_KinhNghiem>()

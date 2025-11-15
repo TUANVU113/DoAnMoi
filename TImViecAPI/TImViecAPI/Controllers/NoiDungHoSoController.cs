@@ -20,134 +20,257 @@ namespace TImViecAPI.Controllers
         {
             _context = context;
         }
-        [HttpPost]
-        public async Task<IActionResult> CreateNoiDungHoSo([FromBody] NoiDungHoSoDto noiDungHoSoDto)
+        [HttpPost("tao-cv-nhanh")]
+        [RequestFormLimits(MultipartBodyLengthLimit = 10 * 1024 * 1024)]
+        [RequestSizeLimit(10 * 1024 * 1024)]
+        public async Task<ActionResult<TaoCVNhanhResponse>> TaoCVNhanh([FromForm] TaoCVNhanhDto dto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
+
+            // === LẤY USER ===
+            var username = User.Identity?.Name;
+            var nguoiDung = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (nguoiDung == null) return Unauthorized();
+
+            var ungVien = await _context.UngVien.FirstOrDefaultAsync(u => u.uvid == nguoiDung.tkid);
+            if (ungVien == null) return NotFound("Không tìm thấy ứng viên.");
+
+            string? avatarPath = null;
+
+            // === UPLOAD VÀO THƯ MỤC Upload TRONG PROJECT ===
+            if (dto.AvatarFile != null && dto.AvatarFile.Length > 0)
+            {
+                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var ext = Path.GetExtension(dto.AvatarFile.FileName).ToLower();
+                if (!allowed.Contains(ext))
+                    return BadRequest("Chỉ chấp nhận .jpg, .png, .gif");
+
+                if (dto.AvatarFile.Length > 5 * 1024 * 1024)
+                    return BadRequest("Ảnh tối đa 5MB");
+
+                var fileName = $"{Guid.NewGuid()}{ext}";
+                var uploadFolder = Path.Combine(Directory.GetCurrentDirectory(), "Upload");
+                var filePath = Path.Combine(uploadFolder, fileName);
+
+                // Tạo thư mục nếu chưa có
+                Directory.CreateDirectory(uploadFolder);
+
+                // Lưu file
+                await using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    await dto.AvatarFile.CopyToAsync(stream);
+                }
+
+                // Lưu đường dẫn vào DB
+                avatarPath = $"/Upload/{fileName}";
             }
 
-            // Kiểm tra xem hosoID có tồn tại trong bảng HoSo không
-            var hoSo = await _context.HoSo.FindAsync(noiDungHoSoDto.HosoID);
-            if (hoSo == null)
+            try
             {
-                return NotFound(new { Message = "Hồ sơ không tồn tại." });
+                var hoSo = new HoSo
+                {
+                    hsName = dto.TenHoSo,
+                    ungvienID = ungVien.uvid,
+                    ViTriFile = null
+                };
+                _context.HoSo.Add(hoSo);
+                await _context.SaveChangesAsync();
+
+                var noiDung = new NoiDungHoSo
+                {
+                    hosoID = hoSo.hsid,
+                    TenUngVien = dto.TenUngVien,
+                    PhoneHoSo = dto.PhoneHoSo,
+                    MailHoSo = dto.MailHoSo,
+                    HocVan = dto.HocVan,
+                    NamKinhNghiemID = dto.NamKinhNghiemID,
+                    MucLuong = dto.MucLuong,
+                    ChucDanhID = dto.ChucDanhID,
+                    LoaiHinhLamViecID = dto.LoaiHinhLamViecID,
+                    LinhVucID = dto.LinhVucID,
+                    ViTriLamViecID = dto.ViTriLamViecID,
+                    MucTieu = dto.MucTieu,
+                    ChucChi = dto.ChucChi,
+                    KyNang = dto.KyNang,    
+                    Avata = avatarPath
+                };
+
+                _context.NoiDungHoSo.Add(noiDung);
+                await _context.SaveChangesAsync();
+
+                return Ok(new TaoCVNhanhResponse
+                {
+                    HoSoID = hoSo.hsid,
+                    NoiDungID = noiDung.ndid,
+                    TenHoSo = hoSo.hsName,
+                    Message = "Tạo CV thành công!",
+                    NgayTao = DateTime.Now
+                });
             }
-            // Tạo đối tượng NoiDungHoSo từ DTO
-            var noiDungHoSo = new NoiDungHoSo
+            catch (Exception ex)
             {
-                TenUngVien = noiDungHoSoDto.TenUngVien,
-                GioiTinh = noiDungHoSoDto.GioiTinh,
-                NgaySinh = noiDungHoSoDto.NgaySinh,
-                PhoneHoSo = noiDungHoSoDto.PhoneHoSo,
-                MailHoSo = noiDungHoSoDto.MailHoSo,
-                QuocGia = noiDungHoSoDto.QuocGia,
-                Tinh = noiDungHoSoDto.Tinh,
-                QuanHuyen = noiDungHoSoDto.QuanHuyen,
-                DiaChi = noiDungHoSoDto.DiaChi,
-
-                //noiDungHoSoDto.Tinh = noiDungHoSoDto.Tinh;
-                //noiDungHoSoDto.QuanHuyen = noiDungHoSoDto.QuanHuyen;
-                //noiDungHoSoDto.DiaChi = noiDungHoSoDto.DiaChi;
-
-                //noiDungHoSo.Tinh = noiDungHoSoDto.Tinh;
-                //noiDungHoSo.QuanHuyen = noiDungHoSoDto.QuanHuyen;
-                //noiDungHoSo.DiaChi = noiDungHoSoDto.DiaChi;
-
-                HocVan = noiDungHoSoDto.HocVan,
-                hosoID = noiDungHoSoDto.HosoID
-            };
-            // Thêm vào cơ sở dữ liệu
-            _context.NoiDungHoSo.Add(noiDungHoSo);
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Message = "Thêm nội dung hồ sơ thành công!", NoiDungHoSoId = noiDungHoSo.ndid });
+                return StatusCode(500, $"Lỗi: {ex.Message}");
+            }
         }
         // GET: api/NoiDungHoSo (Lấy tất cả nội dung hồ sơ)
-        [HttpGet]
-        public async Task<IActionResult> GetAllNoiDungHoSo()
+        [HttpGet("danh-sach")]
+        public async Task<ActionResult<IEnumerable<HoSoDto>>> GetDanhSach()
         {
-            var noiDungHoSoList = await _context.NoiDungHoSo.ToListAsync();
-            if (noiDungHoSoList == null || !noiDungHoSoList.Any())
-            {
-                return NotFound(new { Message = "Không có nội dung hồ sơ nào." });
-            }
+            var username = User.Identity?.Name;
+            var nguoiDung = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (nguoiDung == null) return Unauthorized();
 
-            return Ok(noiDungHoSoList);
-        }
+            var ungVienId = nguoiDung.tkid;
 
-        // GET: api/NoiDungHoSo/{id} (Lấy nội dung hồ sơ theo ID)
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetNoiDungHoSoById(int id)
-        {
-            var noiDungHoSo = await _context.NoiDungHoSo.FindAsync(id);
-            if (noiDungHoSo == null)
-            {
-                return NotFound(new { Message = "Nội dung hồ sơ không tồn tại." });
-            }
-
-            return Ok(noiDungHoSo);
-        }
-
-        // PUT: api/NoiDungHoSo/{id} (Cập nhật nội dung hồ sơ)
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateNoiDungHoSo(int id, [FromBody] NoiDungHoSoDto noiDungHoSoDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
-            var noiDungHoSo = await _context.NoiDungHoSo.FindAsync(id);
-            if (noiDungHoSo == null)
-            {
-                return NotFound(new { Message = "Nội dung hồ sơ không tồn tại." });
-            }
-
-            // Kiểm tra xem hosoID mới có tồn tại không (nếu thay đổi)
-            if (noiDungHoSo.hosoID != noiDungHoSoDto.HosoID)
-            {
-                var hoSo = await _context.HoSo.FindAsync(noiDungHoSoDto.HosoID);
-                if (hoSo == null)
+            var hoSoList = await _context.HoSo
+                .Where(h => h.ungvienID == ungVienId)
+                .Include(h => h.NoiDungHoSo)
+                .Select(h => new HoSoDto
                 {
-                    return NotFound(new { Message = "Hồ sơ mới không tồn tại." });
-                }
-            }
+                    HoSoId = h.hsid,
+                    HoSoName = h.hsName,
+                    TenUngVien = h.NoiDungHoSo!.TenUngVien,
+                    Avata = h.NoiDungHoSo.Avata,
+                    FileUrl = h.ViTriFile,
+                    NgayTao = DateTime.Now // hoặc thêm trường vào DB
+                })
+                .OrderByDescending(h => h.NgayTao)
+                .ToListAsync();
 
-            // Cập nhật các trường
-            noiDungHoSo.TenUngVien = noiDungHoSoDto.TenUngVien;
-            noiDungHoSo.GioiTinh = noiDungHoSoDto.GioiTinh;
-            noiDungHoSo.NgaySinh = noiDungHoSoDto.NgaySinh;
-            noiDungHoSo.PhoneHoSo = noiDungHoSoDto.PhoneHoSo;
-            noiDungHoSo.MailHoSo = noiDungHoSoDto.MailHoSo;
-            noiDungHoSo.QuocGia = noiDungHoSoDto.QuocGia;
-            noiDungHoSoDto.Tinh = noiDungHoSoDto.Tinh;
-            noiDungHoSoDto.QuanHuyen = noiDungHoSoDto.QuanHuyen;
-            noiDungHoSoDto.DiaChi = noiDungHoSoDto.DiaChi;
-            noiDungHoSo.HocVan = noiDungHoSoDto.HocVan;
-            noiDungHoSo.hosoID = noiDungHoSoDto.HosoID;
-
-            await _context.SaveChangesAsync();
-
-            return Ok(new { Message = "Cập nhật nội dung hồ sơ thành công!" });
+            return Ok(hoSoList);
         }
 
-        // DELETE: api/NoiDungHoSo/{id} (Xóa nội dung hồ sơ)
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteNoiDungHoSo(int id)
+        [HttpGet("{hoSoId}")]
+        public async Task<ActionResult<HoSoDetailDto>> GetHoSo(int hoSoId)
         {
-            var noiDungHoSo = await _context.NoiDungHoSo.FindAsync(id);
-            if (noiDungHoSo == null)
+            var username = User.Identity?.Name;
+            var nguoiDung = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (nguoiDung == null) return Unauthorized();
+
+            var hoSo = await _context.HoSo
+                .Include(h => h.NoiDungHoSo)
+                .FirstOrDefaultAsync(h => h.hsid == hoSoId && h.ungvienID == nguoiDung.tkid);
+
+            if (hoSo == null) return NotFound();
+
+            return Ok(new HoSoDetailDto
             {
-                return NotFound(new { Message = "Nội dung hồ sơ không tồn tại." });
+                HoSoId = hoSo.hsid,
+                HoSoName = hoSo.hsName,
+                TenUngVien = hoSo.NoiDungHoSo!.TenUngVien,
+                PhoneHoSo = hoSo.NoiDungHoSo.PhoneHoSo,
+                MailHoSo = hoSo.NoiDungHoSo.MailHoSo,
+                HocVan = hoSo.NoiDungHoSo.HocVan,
+                NamKinhNghiemID = hoSo.NoiDungHoSo.NamKinhNghiemID,
+                MucLuong = hoSo.NoiDungHoSo.MucLuong,
+                ChucDanhID = hoSo.NoiDungHoSo.ChucDanhID,
+                LoaiHinhLamViecID = hoSo.NoiDungHoSo.LoaiHinhLamViecID,
+                LinhVucID = hoSo.NoiDungHoSo.LinhVucID,
+                ViTriLamViecID = hoSo.NoiDungHoSo.ViTriLamViecID,
+                MucTieu = hoSo.NoiDungHoSo.MucTieu,
+                ChucChi = hoSo.NoiDungHoSo.ChucChi,
+                KyNang = hoSo.NoiDungHoSo.KyNang,
+                Avata = hoSo.NoiDungHoSo.Avata,
+                FileUrl = hoSo.ViTriFile,
+                NgayTao = DateTime.Now
+            });
+        }
+
+        // ==================== UPDATE (sửa CV) ====================
+        [HttpPut("{hoSoId}")]
+        public async Task<IActionResult> CapNhatHoSo(int hoSoId, [FromForm] TaoCVNhanhDto dto)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var username = User.Identity?.Name;
+            var nguoiDung = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (nguoiDung == null) return Unauthorized();
+
+            var hoSo = await _context.HoSo
+                .Include(h => h.NoiDungHoSo)
+                .FirstOrDefaultAsync(h => h.hsid == hoSoId && h.ungvienID == nguoiDung.tkid);
+
+            if (hoSo == null) return NotFound("Không tìm thấy hồ sơ.");
+
+            string? newAvatarPath = hoSo.NoiDungHoSo!.Avata;
+
+            // XỬ LÝ ẢNH MỚI
+            if (dto.AvatarFile != null && dto.AvatarFile.Length > 0)
+            {
+                var allowed = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+                var ext = Path.GetExtension(dto.AvatarFile.FileName).ToLower();
+                if (!allowed.Contains(ext)) return BadRequest("Chỉ chấp nhận .jpg, .png, .gif");
+                if (dto.AvatarFile.Length > 5 * 1024 * 1024) return BadRequest("Ảnh tối đa 5MB");
+
+                // XÓA ẢNH CŨ
+                if (!string.IsNullOrEmpty(hoSo.NoiDungHoSo.Avata))
+                {
+                    var oldPath = Path.Combine(Directory.GetCurrentDirectory(), "Upload",
+                        hoSo.NoiDungHoSo.Avata.Replace("/Upload/", ""));
+                    if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+                }
+
+                // LƯU ẢNH MỚI
+                //var fileName = $"{Guid.NewGuid()}{ext}";
+                //var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload", fileName);
+                //await using (var stream = new FileStream(filePath, FileMode.Create))
+                //{
+                //    await dto.AvatarFile.CopyToAsync(stream);
+                //}
+                //newAvatarPath = $ocyanate / Upload /{ fileName}
+                //";
             }
 
-            _context.NoiDungHoSo.Remove(noiDungHoSo);
+            // CẬP NHẬT DỮ LIỆU
+            hoSo.hsName = dto.TenHoSo;
+            hoSo.NoiDungHoSo!.TenUngVien = dto.TenUngVien;
+            hoSo.NoiDungHoSo.PhoneHoSo = dto.PhoneHoSo;
+            hoSo.NoiDungHoSo.MailHoSo = dto.MailHoSo;
+            hoSo.NoiDungHoSo.HocVan = dto.HocVan;
+            hoSo.NoiDungHoSo.NamKinhNghiemID = dto.NamKinhNghiemID;
+            hoSo.NoiDungHoSo.MucLuong = dto.MucLuong;
+            hoSo.NoiDungHoSo.ChucDanhID = dto.ChucDanhID;
+            hoSo.NoiDungHoSo.LoaiHinhLamViecID = dto.LoaiHinhLamViecID;
+            hoSo.NoiDungHoSo.LinhVucID = dto.LinhVucID;
+            hoSo.NoiDungHoSo.ViTriLamViecID = dto.ViTriLamViecID;
+            hoSo.NoiDungHoSo.MucTieu = dto.MucTieu;
+            hoSo.NoiDungHoSo.ChucChi = dto.ChucChi;
+            hoSo.NoiDungHoSo.Avata = newAvatarPath;
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "Xóa nội dung hồ sơ thành công!" });
+            return Ok(new { Message = "Cập nhật CV thành công!" });
         }
+
+        // ==================== DELETE (xóa CV + ảnh) ====================
+        [HttpDelete("{hoSoId}")]
+        public async Task<IActionResult> XoaHoSo(int hoSoId)
+        {
+            var username = User.Identity?.Name;
+            var nguoiDung = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (nguoiDung == null) return Unauthorized();
+
+            var hoSo = await _context.HoSo
+                .Include(h => h.NoiDungHoSo)
+                .FirstOrDefaultAsync(h => h.hsid == hoSoId && h.ungvienID == nguoiDung.tkid);
+
+            if (hoSo == null) return NotFound("Không tìm thấy hồ sơ.");
+
+            // XÓA ẢNH
+            if (!string.IsNullOrEmpty(hoSo.NoiDungHoSo!.Avata))
+            {
+                var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Upload",
+                    hoSo.NoiDungHoSo.Avata.Replace("/Upload/", ""));
+                if (System.IO.File.Exists(filePath)) System.IO.File.Delete(filePath);
+            }
+
+            _context.HoSo.Remove(hoSo);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Xóa CV thành công!" });
+        }
+
     }
 }
 

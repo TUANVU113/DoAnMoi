@@ -16,6 +16,8 @@ namespace TImViecAPI.Model
         public string? ViTriFile { get; set; }
 
         public int? ungvienID { get; set; }
+        // THÊM DÒNG NÀY – NAVIGATION PROPERTY
+        public NoiDungHoSo? NoiDungHoSo { get; set; }
 
         [ForeignKey("ungvienID")]
         public UngVien? UngVien { get; set; }

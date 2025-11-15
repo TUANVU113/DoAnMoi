@@ -137,5 +137,28 @@ namespace TImViecAPI.Controllers
             });
         }
 
+        [HttpDelete("bo-luu/{tinId}")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> BoLuu(int tinId)
+        {
+            string? username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username)) return Unauthorized();
+
+            var nguoiDung = _context.NguoiDung.FirstOrDefault(nd => nd.tkName == username);
+            if (nguoiDung == null) return Unauthorized();
+
+            int ungVienId = nguoiDung.tkid;
+
+            var item = await _context.CongViecYeuThich
+                .FirstOrDefaultAsync(cv => cv.ungvienID == ungVienId && cv.tintuyenID == tinId);
+
+            if (item == null) return NotFound("Chưa lưu tin này.");
+
+            _context.CongViecYeuThich.Remove(item);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Bỏ lưu thành công!" });
+        }
+
     }
 }

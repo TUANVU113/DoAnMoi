@@ -1,5 +1,25 @@
 [
   {
+    "ContainingType": "TImViecAPI.Controllers.AdminController",
+    "Method": "ThongKeTinTuyenDung",
+    "RelativePath": "api/Admin/tin-tuyen-dung",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "TImViecAPI.Model_Function.Dtos.ThongKeTuNgayDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "TImViecAPI.Controllers.BangCapController",
     "Method": "GetBangCapById",
     "RelativePath": "api/BangCap/{id}",
@@ -653,62 +673,137 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.NoiDungHoSoController",
-    "Method": "CreateNoiDungHoSo",
-    "RelativePath": "api/NoiDungHoSo",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "noiDungHoSoDto",
-        "Type": "TImViecAPI.Model_Function.Dtos.NoiDungHoSoDto",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "TImViecAPI.Controllers.NoiDungHoSoController",
-    "Method": "GetAllNoiDungHoSo",
-    "RelativePath": "api/NoiDungHoSo",
-    "HttpMethod": "GET",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "TImViecAPI.Controllers.NoiDungHoSoController",
-    "Method": "GetNoiDungHoSoById",
-    "RelativePath": "api/NoiDungHoSo/{id}",
+    "Method": "GetHoSo",
+    "RelativePath": "api/NoiDungHoSo/{hoSoId}",
     "HttpMethod": "GET",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
+        "Name": "hoSoId",
         "Type": "System.Int32",
         "IsRequired": true
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "TImViecAPI.Model_Function.Dtos.HoSoDetailDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "TImViecAPI.Controllers.NoiDungHoSoController",
-    "Method": "UpdateNoiDungHoSo",
-    "RelativePath": "api/NoiDungHoSo/{id}",
+    "Method": "CapNhatHoSo",
+    "RelativePath": "api/NoiDungHoSo/{hoSoId}",
     "HttpMethod": "PUT",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
+        "Name": "hoSoId",
         "Type": "System.Int32",
         "IsRequired": true
       },
       {
-        "Name": "noiDungHoSoDto",
-        "Type": "TImViecAPI.Model_Function.Dtos.NoiDungHoSoDto",
+        "Name": "TenHoSo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TenUngVien",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneHoSo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MailHoSo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "HocVan",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NamKinhNghiemID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "MucLuong",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ChucDanhID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoaiHinhLamViecID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LinhVucID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ViTriLamViecID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "KyNang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MucTieu",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ChucChi",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Avata",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "AvatarFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.NoiDungHoSoController",
+    "Method": "XoaHoSo",
+    "RelativePath": "api/NoiDungHoSo/{hoSoId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hoSoId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
@@ -716,19 +811,124 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.NoiDungHoSoController",
-    "Method": "DeleteNoiDungHoSo",
-    "RelativePath": "api/NoiDungHoSo/{id}",
-    "HttpMethod": "DELETE",
+    "Method": "GetDanhSach",
+    "RelativePath": "api/NoiDungHoSo/danh-sach",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TImViecAPI.Model_Function.Dtos.HoSoDto, TImViecAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.NoiDungHoSoController",
+    "Method": "TaoCVNhanh",
+    "RelativePath": "api/NoiDungHoSo/tao-cv-nhanh",
+    "HttpMethod": "POST",
     "IsController": true,
     "Order": 0,
     "Parameters": [
       {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": true
+        "Name": "TenHoSo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "TenUngVien",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "PhoneHoSo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MailHoSo",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "HocVan",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "NamKinhNghiemID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "MucLuong",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ChucDanhID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LoaiHinhLamViecID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "LinhVucID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "ViTriLamViecID",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=8.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      },
+      {
+        "Name": "KyNang",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "MucTieu",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "ChucChi",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Avata",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "AvatarFile",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
       }
     ],
-    "ReturnTypes": []
+    "ReturnTypes": [
+      {
+        "Type": "TImViecAPI.Model_Function.Dtos.TaoCVNhanhResponse",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
   },
   {
     "ContainingType": "TImViecAPI.Controllers.RegisterController",
@@ -1197,6 +1397,22 @@
       {
         "Name": "dto",
         "Type": "TImViecAPI.Controllers.ViTriController\u002BViTriDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.YeuThichController",
+    "Method": "BoLuu",
+    "RelativePath": "api/YeuThich/bo-luu/{tinId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "tinId",
+        "Type": "System.Int32",
         "IsRequired": true
       }
     ],
