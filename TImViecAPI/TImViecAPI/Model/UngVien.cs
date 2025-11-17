@@ -27,6 +27,8 @@ namespace TImViecAPI.Model
         public NguoiDung NguoiDung { get; set; }
         public ThongTinCaNhan? ThongTinCaNhan { get; set; }
         public ICollection<CongViecYeuThich> CongViecYeuThichs { get; set; } = new List<CongViecYeuThich>();
+        // THAY BẰNG DÒNG NÀY → 1 ỨNG VIÊN → NHIỀU HỒ SƠ
+        public ICollection<HoSo> HoSoList { get; set; } = new List<HoSo>();
     }
 
 }

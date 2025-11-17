@@ -1,25 +1,25 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+﻿    using System.ComponentModel.DataAnnotations.Schema;
+    using System.ComponentModel.DataAnnotations;
 
-namespace TImViecAPI.Model
-{
-    public class HoSo
+    namespace TImViecAPI.Model
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int hsid { get; set; }
+        public class HoSo
+        {
+            [Key]
+            [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+            public int hsid { get; set; }
 
-        [StringLength(255)]
-        public string? hsName { get; set; }
+            [StringLength(255)]
+            public string? hsName { get; set; }
 
-        [StringLength(255)]
-        public string? ViTriFile { get; set; }
+            [StringLength(255)]
+            public string? ViTriFile { get; set; }
 
-        public int? ungvienID { get; set; }
-        // THÊM DÒNG NÀY – NAVIGATION PROPERTY
-        public NoiDungHoSo? NoiDungHoSo { get; set; }
+            public int? ungvienID { get; set; }
+            // THÊM DÒNG NÀY – NAVIGATION PROPERTY
+            public NoiDungHoSo? NoiDungHoSo { get; set; }
 
-        [ForeignKey("ungvienID")]
-        public UngVien? UngVien { get; set; }
+            [ForeignKey("ungvienID")]
+            public UngVien? UngVien { get; set; }
+        }
     }
-}

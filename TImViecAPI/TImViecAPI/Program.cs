@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Net.Mail;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Đọc cấu hình
@@ -24,28 +25,6 @@ var connectionString = builder.Configuration.GetConnectionString("MySqlConn");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
-// Authentication với Cookie
-//builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-//    .AddCookie(options =>
-//    {
-//        options.LoginPath = "/api/register/login"; // Đường dẫn khớp với API login
-//        options.LogoutPath = "/api/register/logout";
-//        options.ExpireTimeSpan = TimeSpan.FromHours(24);
-//        options.SlidingExpiration = true;
-//        options.Cookie.HttpOnly = true;
-//        options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
-//            ? CookieSecurePolicy.None // Dev local
-//            : CookieSecurePolicy.SameAsRequest; // Prod
-//        options.Events.OnValidatePrincipal = context =>
-//        {
-//            return Task.CompletedTask;
-//        };
-//    });
-
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("NhaTuyenDungOnly", policy => policy.RequireRole("NhaTuyenDung"));
-//});
 
 // Configure JWT Authentication
 //Cau hinh JWT
@@ -100,7 +79,24 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection("SmtpSettings"));
 
+
+
 var app = builder.Build();
+
+
+
+
+
+
+// ===== 5. KIỂM TRA DB (DEMO) =====
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetService<AppDbContext>();
+    var canConnect = await context!.Database.CanConnectAsync();
+    Console.WriteLine($"[CHECK DB] Kết nối thành công: {canConnect}");
+}
+
+
 
 
 // Configure the HTTP request pipeline.
@@ -109,6 +105,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
 
 app.UseCors("AllowReactApp");
 

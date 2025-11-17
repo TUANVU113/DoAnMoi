@@ -5,6 +5,8 @@ using TImViecAPI.Data;
 using TImViecAPI.Model;
 using System.Security.Claims;
 using TImViecAPI.Model_Function.Dtos;
+using static TImViecAPI.Controllers.TInTuyenDungController;
+using TImViecAPI.Helpers;
 
 namespace TImViecAPI.Controllers
 {
@@ -200,6 +202,67 @@ namespace TImViecAPI.Controllers
                 .ToListAsync();
 
             return Ok(danhSach);
+        }
+
+        [HttpGet("goi-y-thong-minh")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<ActionResult<IEnumerable<TinTuyenDungDto>>> GoiYThongMinh()
+        {
+            var username = User.Identity?.Name;
+
+            var ungVien = await _context.UngVien
+                .Include(u => u.HoSoList).ThenInclude(h => h.NoiDungHoSo)
+                .FirstOrDefaultAsync(u => u.NguoiDung.tkName == username);
+
+            if (ungVien == null || ungVien.HoSoList == null || !ungVien.HoSoList.Any())
+                return Ok(new List<TinTuyenDungDto>());
+
+            // Lấy hồ sơ mới nhất
+            var latestHoSo = ungVien.HoSoList.OrderByDescending(h => h.hsid).First();
+            if (latestHoSo.NoiDungHoSo == null)
+                return Ok(new List<TinTuyenDungDto>());
+
+            var cv = latestHoSo.NoiDungHoSo;
+            var cvVector = JobMatchingHelper.ToVector(cv);
+            var linhVucId = cv.LinhVucID ?? 0;
+
+            // B1: Lọc tin cùng lĩnh vực (gom cụm theo lĩnh vực)
+            var candidateJobs = await _context.TInTuyenDung
+                .Where(t => t.linhvucIID == linhVucId
+                            && t.TrangThai == "Đã duyệt"
+                            && t.HanNop >= DateTime.Today)
+                .ToListAsync();
+
+            // Nếu không có tin cùng lĩnh vực → fallback lấy tất cả (không để trống)
+            if (!candidateJobs.Any())
+            {
+                candidateJobs = await _context.TInTuyenDung
+                    .Where(t => t.TrangThai == "Đã duyệt" && t.HanNop >= DateTime.Today)
+                    .ToListAsync();
+            }
+
+            // B2: So sánh trực tiếp → lấy top 5 giống nhất
+            var top5 = candidateJobs
+                .Select(job => new
+                {
+                    Job = job,
+                    Score = JobMatchingHelper.CosineSimilarity(cvVector, JobMatchingHelper.ToVector(job))
+                })
+                .OrderByDescending(x => x.Score)
+                .Take(5)
+                .Select(x => new TinTuyenDungDto
+                {
+                    TinId = x.Job.ttdid,
+                    TieuDe = x.Job.TieuDe,
+                    CongTy = x.Job.NhaTuyenDung?.CongTy?.ctName ?? "Chưa cung cấp",
+                    ChucDanh = x.Job.ChucDanh?.cdName,
+                    NgayDang = x.Job.NgayDang?.ToString("dd/MM/yyyy") ?? "Không xác định",
+                    HanNop = x.Job.HanNop?.ToString("dd/MM/yyyy") ?? "Không xác định",
+                    PhuHop = Math.Round(x.Score * 100, 1)  // % phù hợp
+                })
+                .ToList();
+
+            return Ok(top5);
         }
     }
 }

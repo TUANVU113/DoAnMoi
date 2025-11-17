@@ -36,6 +36,8 @@ namespace TImViecAPI.Data
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<ThongTinCaNhan> thongTinCaNhans { get; set; }
         public DbSet<CongViecYeuThich> CongViecYeuThich { get; set; } = null!;
+        //public DbSet<UngVien_Cluster> UngVien_Cluster { get; set; } = null!;
+        //public DbSet<TinTuyenDung_Cluster> TinTuyenDung_Cluster { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -126,7 +128,7 @@ namespace TImViecAPI.Data
             // HoSo - UngVien (Nhiều-đến-Một)
             modelBuilder.Entity<HoSo>()
                 .HasOne(hs => hs.UngVien)
-                .WithMany()
+                .WithMany(u => u.HoSoList)
                 .HasForeignKey(hs => hs.ungvienID)
                 .OnDelete(DeleteBehavior.NoAction);
 
@@ -310,6 +312,28 @@ namespace TImViecAPI.Data
                 .WithMany(t => t.CongViecYeuThichs) // ← Đảm bảo bạn có navigation này trong TInTuyenDung.cs
                 .HasForeignKey(cv => cv.tintuyenID)
                 .OnDelete(DeleteBehavior.Cascade); // Xóa yêu thích nếu xóa tin
+
+            // === UngVien_Cluster ===
+            //modelBuilder.Entity<UngVien_Cluster>(entity =>
+            //{
+            //    entity.HasKey(e => e.ungvienID);
+
+            //    entity.HasOne(e => e.UngVien)
+            //          .WithOne()
+            //          .HasForeignKey<UngVien_Cluster>(e => e.ungvienID)
+            //          .OnDelete(DeleteBehavior.Cascade);
+            //});
+
+            // === TinTuyenDung_Cluster ===
+            //modelBuilder.Entity<TinTuyenDung_Cluster>(entity =>
+            //{
+            //    entity.HasKey(e => e.ttdid);
+
+            //    entity.HasOne(e => e.TinTuyenDung)
+            //          .WithOne()
+            //          .HasForeignKey<TinTuyenDung_Cluster>(e => e.ttdid)
+            //          .OnDelete(DeleteBehavior.Cascade);
+            //});
 
         }
     }

@@ -1309,6 +1309,26 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.UngTuyenController",
+    "Method": "GoiYThongMinh",
+    "RelativePath": "api/UngTuyen/goi-y-thong-minh",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[TImViecAPI.Model_Function.Dtos.TinTuyenDungDto, TImViecAPI, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.UngTuyenController",
     "Method": "NopDon",
     "RelativePath": "api/UngTuyen/nop-don",
     "HttpMethod": "POST",
