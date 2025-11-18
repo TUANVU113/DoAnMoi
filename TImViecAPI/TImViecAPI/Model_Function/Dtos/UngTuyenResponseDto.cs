@@ -7,5 +7,6 @@
         public string TrangThai { get; set; } = "Đang chờ duyệt";
         public string TieuDeTin { get; set; }
         public string TenCongTy { get; set; }
+        public int TinID { get; set; }
     }
 }

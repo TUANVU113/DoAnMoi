@@ -160,7 +160,8 @@ namespace TImViecAPI.Controllers
                 NgayNop = ungTuyen.NgayNop ?? DateTime.Now,
                 TrangThai = ungTuyen.TrangThai,
                 TieuDeTin = tin.TieuDe,
-                TenCongTy = tin.NhaTuyenDung?.CongTy?.ctName ?? "Không rõ"
+                TenCongTy = tin.NhaTuyenDung?.CongTy?.ctName ?? "Không rõ",
+                TinID = tin.ttdid
             });
         }
 
@@ -196,7 +197,8 @@ namespace TImViecAPI.Controllers
                     TenCongTy = ut.TInTuyenDung!.NhaTuyenDung != null &&
                                 ut.TInTuyenDung.NhaTuyenDung.CongTy != null
                         ? ut.TInTuyenDung.NhaTuyenDung.CongTy.ctName
-                        : "Không rõ"
+                          : "Không rõ",
+                    TinID = ut.TInTuyenDung.ttdid
                 })
                 .OrderByDescending(ut => ut.NgayNop)
                 .ToListAsync();

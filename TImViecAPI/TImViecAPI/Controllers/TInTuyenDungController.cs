@@ -234,8 +234,8 @@ namespace TImViecAPI.Controllers
                     ttd.linhvucIID,
                     ttd.vitriID,
                     ttd.NhaTuyenDung.CongTy.ctName,
-                    ttd.nhaTuyenDungID,
-                    Logo = ttd.NhaTuyenDung.CongTy.Logo
+         ttd.NhaTuyenDung.ntdName,
+         Logo = ttd.NhaTuyenDung.CongTy.Logo
                 })
                 .ToListAsync();
             if (!tins.Any())
