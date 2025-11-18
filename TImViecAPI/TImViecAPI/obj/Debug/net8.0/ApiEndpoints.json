@@ -20,6 +20,27 @@
     ]
   },
   {
+    "ContainingType": "TImViecAPI.Controllers.AdminController",
+    "Method": "ThongKeTheoNgay",
+    "RelativePath": "api/Admin/tin-tuyen-dung-theo-ngay",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "fromDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      },
+      {
+        "Name": "toDate",
+        "Type": "System.DateTime",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "TImViecAPI.Controllers.BangCapController",
     "Method": "GetBangCapById",
     "RelativePath": "api/BangCap/{id}",
@@ -929,6 +950,22 @@
         "StatusCode": 200
       }
     ]
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.RegisterController",
+    "Method": "GoogleLogin",
+    "RelativePath": "api/Register/google-login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.Model_Function.Dtos.GoogleLoginDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
   },
   {
     "ContainingType": "TImViecAPI.Controllers.RegisterController",

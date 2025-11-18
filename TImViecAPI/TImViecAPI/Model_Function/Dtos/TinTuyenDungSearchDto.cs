@@ -3,8 +3,6 @@
     public class TinTuyenDungSearchDto
     {
         public string? Keyword { get; set; }
-        public int? MinSalary { get; set; }
-        public int? MaxSalary { get; set; }
         public int? LoaiHinhId { get; set; }
         public int? ChucDanhId { get; set; }
         public int? KinhNghiemId { get; set; }
@@ -12,8 +10,11 @@
         public int? LinhVucId { get; set; }
         public int? ViTriId { get; set; }
         public int? NhaTuyenDungId { get; set; }
+        public int? CongTyId { get; set; }
+
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }
+
 
         // Phân trang
         public int Page { get; set; } = 1;

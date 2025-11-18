@@ -38,6 +38,29 @@ namespace TImViecAPI.Controllers
 
             return Ok(result);
         }
+        [HttpGet("tin-tuyen-dung-theo-ngay")]
+        [Authorize(Roles = "Admin")]
+        public async Task<ActionResult> ThongKeTheoNgay([FromQuery] DateTime fromDate, [FromQuery] DateTime toDate)
+        {
+            // Kiểm tra từ ngày <= đến ngày
+            if (fromDate > toDate)
+                return BadRequest("Ngày bắt đầu không được lớn hơn ngày kết thúc.");
+
+            var data = await _context.TInTuyenDung
+                .Where(t => t.NgayDang.HasValue &&
+                            t.NgayDang.Value.Date >= fromDate.Date &&
+                            t.NgayDang.Value.Date <= toDate.Date)
+                .GroupBy(t => t.NgayDang.Value.Date) // Lấy ngày bỏ phần thời gian
+                .Select(g => new
+                {
+                    Ngay = g.Key,
+                    SoLuong = g.Count()
+                })
+                .OrderBy(x => x.Ngay)
+                .ToListAsync();
+
+            return Ok(data);
+        }
 
 
     }

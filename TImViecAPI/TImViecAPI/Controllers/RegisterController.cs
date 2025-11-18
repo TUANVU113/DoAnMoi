@@ -1,3 +1,4 @@
+﻿
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ namespace TImViecAPI.Controllers
         private readonly AppDbContext _context;
         private readonly IConfiguration _configuration;
         //private object _configuration;
-   
+
         public RegisterController(AppDbContext context, IConfiguration configuration)
         {
             _context = context;
@@ -78,9 +79,9 @@ namespace TImViecAPI.Controllers
 
                 await transaction.CommitAsync();
 
-                return Ok(new 
-                { 
-                    Message = "Đăng ký thành công! Hồ sơ ứng viên đã được tạo (có thể bổ sung sau).", 
+                return Ok(new
+                {
+                    Message = "Đăng ký thành công! Hồ sơ ứng viên đã được tạo (có thể bổ sung sau).",
                     TkId = nguoiDung.tkid,
                     UvId = ungVien.uvid,  // Xác nhận uvid = tkid
                     LinhvucID = ungVien.linhvucID
@@ -147,7 +148,7 @@ namespace TImViecAPI.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginDto loginDto )
+        public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
@@ -159,7 +160,7 @@ namespace TImViecAPI.Controllers
                 return BadRequest(new { Message = "Email hoặc mật khẩu không đúng." });
             }
 
-            
+
             // Kiểm tra vai trò
             var nhaTuyenDung = await _context.NhaTuyenDung
                 .FirstOrDefaultAsync(ntd => ntd.ntdid == nguoiDung.tkid);
@@ -310,5 +311,79 @@ namespace TImViecAPI.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return Ok(new { Message = "Đăng xuất thành công!" });
         }
+
+
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginDto dto)
+        {
+            try
+            {
+                var payload = await Google.Apis.Auth.GoogleJsonWebSignature.ValidateAsync(dto.Token);
+
+                // Lấy email Google
+                string email = payload.Email;
+                string name = payload.Name;
+
+                // 1. Kiểm tra user có tồn tại chưa
+                var user = await _context.NguoiDung.FirstOrDefaultAsync(u => u.mail == email);
+
+                if (user == null)
+                {
+                    // 👉 Chưa có tài khoản → trả về yêu cầu đăng ký bổ sung
+                    return Ok(new
+                    {
+                        RequireRegister = true,
+                        Email = email,
+                        RealName = name
+                    });
+                }
+
+                // 2. Nếu user tồn tại → xác định role
+                var ntd = await _context.NhaTuyenDung.FirstOrDefaultAsync(x => x.ntdid == user.tkid);
+                var uv = await _context.UngVien.FirstOrDefaultAsync(x => x.uvid == user.tkid);
+                var role = ntd != null ? "NhaTuyenDung" : (uv != null ? "UngVien" : "Admin");
+
+                // 3. Tạo token giống login thường
+                var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.tkid.ToString()),
+            new Claim(ClaimTypes.Name, user.tkName),
+            new Claim(ClaimTypes.Role, role)
+        };
+
+                var jwtSettings = _configuration.GetSection("Jwt");
+                var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]);
+
+                var tokenDescriptor = new SecurityTokenDescriptor
+                {
+                    Subject = new ClaimsIdentity(claims),
+                    Expires = DateTime.UtcNow.AddHours(2),
+                    Issuer = jwtSettings["Issuer"],
+                    Audience = jwtSettings["Audience"],
+                    SigningCredentials = new SigningCredentials(
+                        new SymmetricSecurityKey(key),
+                        SecurityAlgorithms.HmacSha256Signature)
+                };
+
+                var handler = new JwtSecurityTokenHandler();
+                var token = handler.WriteToken(handler.CreateToken(tokenDescriptor));
+
+                return Ok(new
+                {
+                    Message = "Đăng nhập Google thành công!",
+                    Token = token,
+                    Role = role,
+                    TkId = user.tkid,
+                    TkName = user.tkName
+                });
+            }
+            catch
+            {
+                return BadRequest(new { Message = "Google token không hợp lệ." });
+            }
+        }
+
     }
 }
+
