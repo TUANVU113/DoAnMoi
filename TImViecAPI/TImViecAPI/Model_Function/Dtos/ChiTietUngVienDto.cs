@@ -1,4 +1,6 @@
 ﻿// DTOs/ChiTietUngVienDto.cs
+using static TImViecAPI.Controllers.BangCapController;
+
 namespace TImViecAPI.Model_Function.Dtos
 {
     public class ChiTietUngVienDto
@@ -14,6 +16,7 @@ namespace TImViecAPI.Model_Function.Dtos
 
         // MỚI: CV tạo nhanh (nội dung chi tiết)
         public HoSoDetailDto? HoSoChiTiet { get; set; }
+        public List<BangCapResponseDto> BangCapList { get; set; } = new();
     }
 
 }

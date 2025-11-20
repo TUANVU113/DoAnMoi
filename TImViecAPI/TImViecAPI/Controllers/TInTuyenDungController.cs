@@ -9,6 +9,7 @@ using TImViecAPI.Data;
 
 using TImViecAPI.Model;
 using TImViecAPI.Model_Function.Dtos;
+using static TImViecAPI.Controllers.BangCapController;
 using static TImViecAPI.Controllers.HoSoController;
 using ThongTinCaNhanDto = TImViecAPI.Model_Function.Dtos.ThongTinCaNhanDto;
 
@@ -472,18 +473,20 @@ namespace TImViecAPI.Controllers
             if (don == null) return NotFound("Đơn ứng tuyển không tồn tại.");
             if (don.nhaTuyenDungID != ntd.ntdid) return Forbid("Bạn không có quyền xem đơn này.");
 
-            // SỬA TẠI ĐÂY: Include NoiDungHoSo
+            // NÂNG CẤP: Include cả Bằng cấp/Chứng chỉ
             var data = await (
                 from ut in _context.UngTuyen.Where(ut => ut.utid == utid)
                 join uu in _context.UngVien_UngTuyen on ut.utid equals uu.ungtuyenID
                 join uv in _context.UngVien.Include(u => u.ThongTinCaNhan) on uu.ungvienID equals uv.uvid
                 join hu in _context.HoSo_UngTuyen on ut.utid equals hu.ungtuyenID
-                join h in _context.HoSo.Include(h => h.NoiDungHoSo) on hu.hosoID equals h.hsid
+                join h in _context.HoSo
+                    .Include(h => h.NoiDungHoSo)
+                    .Include(h => h.BangCapUploads) // ← THÊM DÒNG NÀY – SIÊU QUAN TRỌNG!
+                    on hu.hosoID equals h.hsid
                 select new { ut, uv, h }
             ).FirstOrDefaultAsync();
 
-            //if (data == null || data.h.NoiDungHoSo == null)
-            //    return NotFound("Không tìm thấy nội dung CV.");
+            if (data == null) return NotFound("Không tìm thấy thông tin ứng viên.");
 
             var result = new ChiTietUngVienDto
             {
@@ -513,26 +516,38 @@ namespace TImViecAPI.Controllers
                     FileUrl = data.h.ViTriFile != null ? $"/Upload/{Path.GetFileName(data.h.ViTriFile)}" : null
                 },
 
-                // BÂY GIỜ CÓ DỮ LIỆU THẬT
                 HoSoChiTiet = data.h.ViTriFile == null ? new HoSoDetailDto
                 {
                     HoSoId = data.h.hsid,
                     HoSoName = data.h.hsName ?? "CV Tạo Nhanh",
-                    TenUngVien = data.h.NoiDungHoSo.TenUngVien ?? "Chưa cung cấp",
-                    Avata = data.h.NoiDungHoSo.Avata,
-                    PhoneHoSo = data.h.NoiDungHoSo.PhoneHoSo ?? "Chưa cung cấp",
-                    MailHoSo = data.h.NoiDungHoSo.MailHoSo ?? "Chưa cung cấp",
-                    HocVan = data.h.NoiDungHoSo.HocVan,
-                    NamKinhNghiemID = data.h.NoiDungHoSo.NamKinhNghiemID,
-                    MucLuong = data.h.NoiDungHoSo.MucLuong,
-                    ChucDanhID = data.h.NoiDungHoSo.ChucDanhID,
-                    LoaiHinhLamViecID = data.h.NoiDungHoSo.LoaiHinhLamViecID,
-                    LinhVucID = data.h.NoiDungHoSo.LinhVucID,
-                    ViTriLamViecID = data.h.NoiDungHoSo.ViTriLamViecID,
-                    MucTieu = data.h.NoiDungHoSo.MucTieu,
-                    ChucChi = data.h.NoiDungHoSo.ChucChi,
-                    KyNang = data.h.NoiDungHoSo.KyNang
-                } : null
+                    TenUngVien = data.h.NoiDungHoSo?.TenUngVien ?? "Chưa cung cấp",
+                    Avata = data.h.NoiDungHoSo?.Avata,
+                    PhoneHoSo = data.h.NoiDungHoSo?.PhoneHoSo ?? "Chưa cung cấp",
+                    MailHoSo = data.h.NoiDungHoSo?.MailHoSo ?? "Chưa cung cấp",
+                    HocVan = data.h.NoiDungHoSo?.HocVan,
+                    NamKinhNghiemID = data.h.NoiDungHoSo?.NamKinhNghiemID,
+                    MucLuong = data.h.NoiDungHoSo?.MucLuong,
+                    ChucDanhID = data.h.NoiDungHoSo?.ChucDanhID,
+                    LoaiHinhLamViecID = data.h.NoiDungHoSo?.LoaiHinhLamViecID,
+                    LinhVucID = data.h.NoiDungHoSo?.LinhVucID,
+                    ViTriLamViecID = data.h.NoiDungHoSo?.ViTriLamViecID,
+                    MucTieu = data.h.NoiDungHoSo?.MucTieu,
+                    ChucChi = data.h.NoiDungHoSo?.ChucChi,
+                    KyNang = data.h.NoiDungHoSo?.KyNang
+                } : null,
+
+                // MỚI: DANH SÁCH BẰNG CẤP & CHỨNG CHỈ
+                // MỚI: DANH SÁCH BẰNG CẤP & CHỨNG CHỈ
+                BangCapList = data.h.BangCapUploads?
+                .Select(b => new BangCapResponseDto
+                {
+                    Id = b.Id,
+                    TenBangCap = b.TenBangCap,
+                    Loai = b.Loai,
+                    FileUrl = b.FileUrl,
+                    NgayUpload = b.NgayUpload.ToString("dd/MM/yyyy")
+                })
+                .ToList() ?? new List<BangCapResponseDto>()
             };
 
             return Ok(result);

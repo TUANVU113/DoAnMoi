@@ -1,5 +1,6 @@
 ﻿    using System.ComponentModel.DataAnnotations.Schema;
     using System.ComponentModel.DataAnnotations;
+using TImViecAPI.Models;
 
     namespace TImViecAPI.Model
     {
@@ -18,8 +19,9 @@
             public int? ungvienID { get; set; }
             // THÊM DÒNG NÀY – NAVIGATION PROPERTY
             public NoiDungHoSo? NoiDungHoSo { get; set; }
+            public ICollection<BangCapUpload> BangCapUploads { get; set; } = new List<BangCapUpload>();
 
-            [ForeignKey("ungvienID")]
+        [ForeignKey("ungvienID")]
             public UngVien? UngVien { get; set; }
         }
     }

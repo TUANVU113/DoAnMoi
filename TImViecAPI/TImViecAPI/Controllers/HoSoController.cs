@@ -7,6 +7,8 @@ using TImViecAPI.Data;
 using TImViecAPI.Model;
 using System.ComponentModel.DataAnnotations;
 using TImViecAPI.Model_Function.Dtos;
+using TImViecAPI.Models;
+using System.Linq;
 
 
 namespace TImViecAPI.Controllers
@@ -387,6 +389,197 @@ namespace TImViecAPI.Controllers
                 DanhSachHoSo = hoSoList
             });
         }
+        [HttpPost("upload-bang-cap")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> UploadBangCap([FromForm] BangCapUploadDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
+            // Lấy user như cũ
+            var username = User.Identity?.Name;
+            var ungVien = _context.NguoiDung.FirstOrDefault(u => u.tkName == username);
+            if (ungVien == null) return Unauthorized("Không tìm thấy ứng viên");
+
+            // Kiểm tra hồ sơ
+            var hoSo = await _context.HoSo
+                .FirstOrDefaultAsync(h => h.hsid == dto.hoSoId && h.ungvienID == ungVien.tkid);
+            if (hoSo == null) return NotFound("Hồ sơ không tồn tại");
+
+            // Xử lý file
+            if (dto.file == null || dto.file.Length == 0)
+                return BadRequest("Chưa chọn file");
+
+            var allowed = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
+            var ext = Path.GetExtension(dto.file.FileName).ToLower();
+            if (!allowed.Contains(ext))
+                return BadRequest("Chỉ chấp nhận PDF, JPG, PNG");
+
+            var fileName = Guid.NewGuid() + ext;
+            var path = Path.Combine("Upload", "bangcap", fileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+
+            await using var stream = new FileStream(path, FileMode.Create);
+            await dto.file.CopyToAsync(stream);
+
+            var bangCap = new BangCapUpload
+            {
+                hosoID = dto.hoSoId,
+                TenBangCap = dto.tenBangCap,
+                Loai = dto.loai,
+                FileUrl = $"/Upload/bangcap/{fileName}"
+            };
+
+            _context.BangCapUploads.Add(bangCap);
+            await _context.SaveChangesAsync();
+
+            return Ok(new
+            {
+                message = "Upload thành công",
+                fileUrl = bangCap.FileUrl
+            });
+        }
+
+        // 1. LẤY TẤT CẢ BẰNG CẤP CỦA MỘT HỒ SƠ
+        [HttpGet("bang-cap/{hoSoId}")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<ActionResult> GetBangCapCuaHoSo(int hoSoId)
+        {
+            var username = User.Identity?.Name;
+            var ungVien = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (ungVien == null) return Unauthorized();
+
+            var hoSo = await _context.HoSo
+                .FirstOrDefaultAsync(h => h.hsid == hoSoId && h.ungvienID == ungVien.tkid);
+            if (hoSo == null) return NotFound("Hồ sơ không tồn tại");
+
+            var list = await _context.BangCapUploads
+                .Where(b => b.hosoID == hoSoId)
+                .OrderByDescending(b => b.NgayUpload)
+                .Select(b => new
+                {
+                    b.Id,
+                    b.TenBangCap,
+                    b.Loai,
+                    b.FileUrl,
+                    NgayUpload = b.NgayUpload.ToString("dd/MM/yyyy HH:mm")
+                })
+                .ToListAsync();
+
+            return Ok(list);
+        }
+
+        // 2. LẤY CHI TIẾT 1 BẰNG CẤP
+        [HttpGet("bang-cap/chi-tiet/{id}")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<ActionResult> GetChiTietBangCap(int id)
+        {
+            var bangCap = await _context.BangCapUploads
+                .Include(b => b.HoSo)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (bangCap == null) return NotFound();
+
+            // Kiểm tra quyền sở hữu
+            var username = User.Identity?.Name;
+            var ungVien = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (bangCap.HoSo.ungvienID != ungVien.tkid) return Forbid();
+
+            return Ok(new
+            {
+                bangCap.Id,
+                bangCap.TenBangCap,
+                bangCap.Loai,
+                bangCap.FileUrl,
+                NgayUpload = bangCap.NgayUpload.ToString("dd/MM/yyyy HH:mm")
+            });
+        }
+        // DTO cho sửa
+        public class SuaBangCapDto
+        {
+            [Required] public string TenBangCap { get; set; } = null!;
+            [Required] public string Loai { get; set; } = null!;
+            public IFormFile? File { get; set; } // ← CHO PHÉP THAY ẢNH
+        }
+
+        // 3. SỬA BẰNG CẤP (chỉ sửa tên + loại, không sửa file)
+        [HttpPut("bang-cap/sua/{id}")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> SuaBangCap(int id, [FromForm] SuaBangCapDto dto)
+        {
+            var bangCap = await _context.BangCapUploads
+                .Include(b => b.HoSo)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (bangCap == null) return NotFound();
+
+            var username = User.Identity?.Name;
+            var ungVien = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (bangCap.HoSo.ungvienID != ungVien.tkid) return Forbid();
+
+            // CẬP NHẬT TÊN + LOẠI
+            bangCap.TenBangCap = dto.TenBangCap;
+            bangCap.Loai = dto.Loai;
+
+            // NẾU CÓ ẢNH MỚI → THAY ẢNH
+            if (dto.File != null && dto.File.Length > 0)
+            {
+                // XÓA ẢNH CŨ
+                if (!string.IsNullOrEmpty(bangCap.FileUrl))
+                {
+                    var oldFileName = Path.GetFileName(bangCap.FileUrl); // ← SỬA DÒNG NÀY
+                    var oldPath = Path.Combine("Upload", "bangcap", oldFileName);
+                    if (System.IO.File.Exists(oldPath))
+                        System.IO.File.Delete(oldPath);
+                }
+
+                // LƯU ẢNH MỚI
+                var allowed = new[] { ".pdf", ".jpg", ".jpeg", ".png" };
+                var ext = Path.GetExtension(dto.File.FileName).ToLower(); // ← SỬA DÒNG NÀY (bị gõ nhầm thành Get344Extension)
+                if (!allowed.Contains(ext)) // ← DÒNG NÀY ĐÚNG RỒI, KHÔNG CẦN SỬA
+                    return BadRequest("File không hợp lệ");
+
+                var newFileName = Guid.NewGuid().ToString() + ext; // ← SỬA DÒNG NÀY (thêm .ToString())
+                var newPath = Path.Combine("Upload", "bangcap", newFileName);
+                Directory.CreateDirectory(Path.GetDirectoryName(newPath)!);
+
+                await using var stream = new FileStream(newPath, FileMode.Create);
+                await dto.File.CopyToAsync(stream);
+
+                bangCap.FileUrl = $"/Upload/bangcap/{newFileName}";
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Cập nhật thành công", fileUrl = bangCap.FileUrl });
+        }
+
+
+
+        // 4. XÓA BẰNG CẤP (xóa cả file trên server)
+        [HttpDelete("bang-cap/xoa/{id}")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> XoaBangCap(int id)
+        {
+            var bangCap = await _context.BangCapUploads
+                .Include(b => b.HoSo)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            if (bangCap == null) return NotFound();
+
+            var username = User.Identity?.Name;
+            var ungVien = await _context.NguoiDung.FirstOrDefaultAsync(u => u.tkName == username);
+            if (bangCap.HoSo.ungvienID != ungVien.tkid) return Forbid();
+
+            // XÓA FILE TRÊN SERVER
+            if (System.IO.File.Exists("wwwroot" + bangCap.FileUrl))
+            {
+                System.IO.File.Delete("wwwroot" + bangCap.FileUrl);
+            }
+
+            _context.BangCapUploads.Remove(bangCap);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Xóa thành công" });
+        }
     }
 }

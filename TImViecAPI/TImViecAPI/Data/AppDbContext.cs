@@ -36,6 +36,8 @@ namespace TImViecAPI.Data
         public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
         public DbSet<ThongTinCaNhan> thongTinCaNhans { get; set; }
         public DbSet<CongViecYeuThich> CongViecYeuThich { get; set; } = null!;
+
+        public DbSet<BangCapUpload> BangCapUploads { get; set; } = null!;
         //public DbSet<UngVien_Cluster> UngVien_Cluster { get; set; } = null!;
         //public DbSet<TinTuyenDung_Cluster> TinTuyenDung_Cluster { get; set; } = null!;
 
@@ -312,6 +314,33 @@ namespace TImViecAPI.Data
                 .WithMany(t => t.CongViecYeuThichs) // ← Đảm bảo bạn có navigation này trong TInTuyenDung.cs
                 .HasForeignKey(cv => cv.tintuyenID)
                 .OnDelete(DeleteBehavior.Cascade); // Xóa yêu thích nếu xóa tin
+
+            modelBuilder.Entity<BangCapUpload>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.TenBangCap)
+                      .IsRequired()
+                      .HasMaxLength(255);
+
+                entity.Property(e => e.FileUrl)
+                      .IsRequired();
+
+                entity.Property(e => e.Loai)
+                      .HasDefaultValue("BangCap");
+
+                // DÒNG NÀY LÀ CHUẨN CHO MYSQL + EF CORE
+                entity.Property(e => e.NgayUpload)
+                      .HasColumnType("datetime(6)")
+                      .HasDefaultValueSql("CURRENT_TIMESTAMP(6)");
+
+                entity.HasOne(e => e.HoSo)
+                      .WithMany(h => h.BangCapUploads)
+                      .HasForeignKey(e => e.hosoID)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(e => e.hosoID);
+            });
 
             // === UngVien_Cluster ===
             //modelBuilder.Entity<UngVien_Cluster>(entity =>

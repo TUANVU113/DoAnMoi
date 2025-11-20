@@ -352,6 +352,85 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.HoSoController",
+    "Method": "GetBangCapCuaHoSo",
+    "RelativePath": "api/HoSo/bang-cap/{hoSoId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hoSoId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.HoSoController",
+    "Method": "GetChiTietBangCap",
+    "RelativePath": "api/HoSo/bang-cap/chi-tiet/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.HoSoController",
+    "Method": "SuaBangCap",
+    "RelativePath": "api/HoSo/bang-cap/sua/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "TenBangCap",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "Loai",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "File",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.HoSoController",
+    "Method": "XoaBangCap",
+    "RelativePath": "api/HoSo/bang-cap/xoa/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.HoSoController",
     "Method": "CreateHoSo",
     "RelativePath": "api/HoSo/create",
     "HttpMethod": "POST",
@@ -434,6 +513,37 @@
       {
         "Name": "hsName",
         "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.HoSoController",
+    "Method": "UploadBangCap",
+    "RelativePath": "api/HoSo/upload-bang-cap",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "hoSoId",
+        "Type": "System.Int32",
+        "IsRequired": false
+      },
+      {
+        "Name": "tenBangCap",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "loai",
+        "Type": "System.String",
+        "IsRequired": false
+      },
+      {
+        "Name": "file",
+        "Type": "Microsoft.AspNetCore.Http.IFormFile",
         "IsRequired": false
       }
     ],
