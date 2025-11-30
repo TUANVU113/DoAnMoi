@@ -253,6 +253,7 @@ namespace TImViecAPI.Controllers
 
 
 
+
         [HttpGet("list-by-ntd")]
         [Authorize(Roles = "NhaTuyenDung")]
         public async Task<IActionResult> GetTinByNhaTuyenDung()
@@ -387,7 +388,7 @@ namespace TImViecAPI.Controllers
         }
 
         [HttpDelete("delete/{id}")]
-        [Authorize(Roles = "NhaTuyenDung")]
+        [Authorize(Roles = "NhaTuyenDung,Admin")]
         public async Task<IActionResult> DeleteTInTuyenDung(int id)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
