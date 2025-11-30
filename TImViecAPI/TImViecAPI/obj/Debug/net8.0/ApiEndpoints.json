@@ -41,6 +41,26 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "TImViecAPI.Controllers.AdminController",
+    "Method": "ThongKeUngTuyen",
+    "RelativePath": "api/Admin/ung-tuyen",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "TImViecAPI.Model_Function.Dtos.ThongKeUngTuyenFullDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "TImViecAPI.Controllers.BangCapController",
     "Method": "GetBangCapById",
     "RelativePath": "api/BangCap/{id}",

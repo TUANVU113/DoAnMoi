@@ -27,6 +27,8 @@ namespace TImViecAPI.Model_Function.Dtos
         [Required(ErrorMessage = "Tên ứng viên là bắt buộc.(Họ và tên thật)")][StringLength(255)] public string UvName { get; set; }
         [Required(ErrorMessage = "Ngày sinh là bắt buộc.")] public DateTime NgaySinh { get; set; }
         [Required][StringLength(255)] public string QuocGia { get; set; }
-        [Required(ErrorMessage = "Lĩnh vực là bắt buộc.")] public int LinhvucID { get; set; }  // Bắt buộc để tránh rắc rối
+
+        //[Required(ErrorMessage = "Lĩnh vực là bắt buộc.")] 
+        public int LinhvucID { get; set; }  // Bắt buộc để tránh rắc rối
     }
 }

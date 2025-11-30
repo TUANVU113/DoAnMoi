@@ -64,6 +64,35 @@
         }
       }
     },
+    "/api/Admin/ung-tuyen": {
+      "get": {
+        "tags": [
+          "Admin"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThongKeUngTuyenFullDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThongKeUngTuyenFullDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThongKeUngTuyenFullDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/BangCap/add": {
       "post": {
         "tags": [
@@ -746,6 +775,185 @@
       "get": {
         "tags": [
           "HoSo"
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HoSo/upload-bang-cap": {
+      "post": {
+        "tags": [
+          "HoSo"
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "hoSoId": {
+                    "type": "integer",
+                    "format": "int32"
+                  },
+                  "tenBangCap": {
+                    "type": "string"
+                  },
+                  "loai": {
+                    "type": "string"
+                  },
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "hoSoId": {
+                  "style": "form"
+                },
+                "tenBangCap": {
+                  "style": "form"
+                },
+                "loai": {
+                  "style": "form"
+                },
+                "file": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HoSo/bang-cap/{hoSoId}": {
+      "get": {
+        "tags": [
+          "HoSo"
+        ],
+        "parameters": [
+          {
+            "name": "hoSoId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HoSo/bang-cap/chi-tiet/{id}": {
+      "get": {
+        "tags": [
+          "HoSo"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HoSo/bang-cap/sua/{id}": {
+      "put": {
+        "tags": [
+          "HoSo"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "required": [
+                  "Loai",
+                  "TenBangCap"
+                ],
+                "type": "object",
+                "properties": {
+                  "TenBangCap": {
+                    "type": "string"
+                  },
+                  "Loai": {
+                    "type": "string"
+                  },
+                  "File": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "TenBangCap": {
+                  "style": "form"
+                },
+                "Loai": {
+                  "style": "form"
+                },
+                "File": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Success"
+          }
+        }
+      }
+    },
+    "/api/HoSo/bang-cap/xoa/{id}": {
+      "delete": {
+        "tags": [
+          "HoSo"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
         ],
         "responses": {
           "200": {
@@ -2562,6 +2770,44 @@
         },
         "additionalProperties": false
       },
+      "BangCapUpload": {
+        "required": [
+          "fileUrl",
+          "tenBangCap"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hosoID": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tenBangCap": {
+            "maxLength": 255,
+            "minLength": 0,
+            "type": "string"
+          },
+          "loai": {
+            "type": "string",
+            "nullable": true
+          },
+          "fileUrl": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "ngayUpload": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hoSo": {
+            "$ref": "#/components/schemas/HoSo"
+          }
+        },
+        "additionalProperties": false
+      },
       "CapNhatTrangThaiDto": {
         "required": [
           "trangThai"
@@ -2888,6 +3134,13 @@
           },
           "noiDungHoSo": {
             "$ref": "#/components/schemas/NoiDungHoSo"
+          },
+          "bangCapUploads": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BangCapUpload"
+            },
+            "nullable": true
           },
           "ungVien": {
             "$ref": "#/components/schemas/UngVien"
@@ -3343,7 +3596,6 @@
       },
       "RegisterDto": {
         "required": [
-          "linhvucID",
           "mail",
           "ngaySinh",
           "password",
@@ -3698,6 +3950,38 @@
           "nam": {
             "type": "integer",
             "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "ThongKeUngTuyenFullDto": {
+        "type": "object",
+        "properties": {
+          "tuNgay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ngay": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tuan": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "thang": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "nam": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tinNhieuNhat": {
+            "nullable": true
+          },
+          "trangThai": {
+            "nullable": true
           }
         },
         "additionalProperties": false
