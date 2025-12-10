@@ -38,6 +38,8 @@ namespace TImViecAPI.Data
         public DbSet<CongViecYeuThich> CongViecYeuThich { get; set; } = null!;
 
         public DbSet<BangCapUpload> BangCapUploads { get; set; } = null!;
+        public DbSet<ToCaoTin> ToCaoTin { get; set; }
+        
         //public DbSet<UngVien_Cluster> UngVien_Cluster { get; set; } = null!;
         //public DbSet<TinTuyenDung_Cluster> TinTuyenDung_Cluster { get; set; } = null!;
 
@@ -340,6 +342,29 @@ namespace TImViecAPI.Data
                       .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasIndex(e => e.hosoID);
+            });
+
+            // Trong OnModelCreating
+            modelBuilder.Entity<ToCaoTin>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.Property(e => e.LyDo).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.NoiDung).IsRequired();
+                entity.Property(e => e.TrangThai).HasDefaultValue("Chờ xử lý");
+
+                entity.HasOne(e => e.UngVien)
+                      .WithMany()
+                      .HasForeignKey(e => e.ungvienID)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(e => e.TinTuyenDung)
+                      .WithMany()
+                      .HasForeignKey(e => e.ttdid)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasIndex(e => e.ttdid);
+                entity.HasIndex(e => e.TrangThai);
             });
 
             // === UngVien_Cluster ===

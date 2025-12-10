@@ -6,5 +6,6 @@ namespace TImViecAPI.Model_Function.Dtos
     {
         [Required]
         public string TrangThai { get; set; } = string.Empty;
+        public string? NoiDungEmail { get; set; }
     }
 }
