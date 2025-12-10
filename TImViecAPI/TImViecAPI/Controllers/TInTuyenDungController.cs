@@ -20,10 +20,13 @@ namespace TImViecAPI.Controllers
     public class TInTuyenDungController : ControllerBase
     {
         private readonly AppDbContext _context;
+        private readonly IEmailService _emailService;
 
-        public TInTuyenDungController(AppDbContext context)
+        public TInTuyenDungController(AppDbContext context, IEmailService emailService)
         {
+        
             _context = context;
+            _emailService = emailService;
         }
 
         public class TInTuyenDungDto
@@ -211,14 +214,15 @@ namespace TImViecAPI.Controllers
         }
 
         [HttpGet("list")]
-        
         public async Task<IActionResult> GetAllTInTuyenDung()
         {
             var tins = await _context.TInTuyenDung
                 .Include(ttd => ttd.NhaTuyenDung)
-         .ThenInclude(ntd => ntd.CongTy)
-     .Select(ttd => new
-     {
+                .ThenInclude(ntd => ntd.CongTy)
+                .Where(ttd => ttd.TrangThai != "Đã khóa")           // ẨN TIN BỊ KHÓA
+                .Where(ttd => ttd.HanNop >= DateTime.Today)         // ẨN TIN HẾT HẠN NỘP
+                .Select(ttd => new
+                {
                     ttd.ttdid,
                     ttd.TieuDe,
                     ttd.MieuTa,
@@ -235,14 +239,16 @@ namespace TImViecAPI.Controllers
                     ttd.linhvucIID,
                     ttd.vitriID,
                     ttd.NhaTuyenDung.CongTy.ctName,
-         ttd.NhaTuyenDung.ntdName,
-         Logo = ttd.NhaTuyenDung.CongTy.Logo
+                    ttd.NhaTuyenDung.ntdName,
+                    Logo = ttd.NhaTuyenDung.CongTy.Logo
                 })
                 .ToListAsync();
+
             if (!tins.Any())
             {
                 return Ok(new { Message = "Không có tin tuyển dụng nào trong hệ thống.", Data = new List<object>() });
             }
+
             return Ok(new
             {
                 Message = "Lấy danh sách tin tuyển dụng thành công!",
@@ -588,14 +594,48 @@ namespace TImViecAPI.Controllers
             if (ungVienId == 0)
                 return Ok(new { Message = "Cập nhật trạng thái thành công, nhưng không tìm thấy ứng viên." });
 
+            // 4.5 LẤY EMAIL ỨNG VIÊN TỪ ThongTinCaNhan
+            var emailUngVien = await _context.UngVien_UngTuyen
+                .Where(uu => uu.ungtuyenID == utid)
+                .Join(_context.UngVien,
+                      uu => uu.ungvienID,
+                      uv => uv.uvid,
+                      (uu, uv) => uv)
+                .Join(_context.thongTinCaNhans,
+                      uv => uv.uvid,
+                      tt => tt.ungvienID,
+                      (uv, tt) => tt.Email)
+                .FirstOrDefaultAsync();
+            // ← THÊM DÒNG NÀY ĐỂ XEM EMAIL CÓ LẤY ĐƯỢC KHÔNG
+            Console.WriteLine($"[DEBUG] Email ứng viên: '{emailUngVien}'");
+
+            // 4.75. GỬI EMAIL NẾU LÀ "Phỏng vấn"
+            if (dto.TrangThai == "Phỏng vấn" && !string.IsNullOrEmpty(emailUngVien) && !string.IsNullOrEmpty(dto.NoiDungEmail))
+            {
+                string tieuDeTin = don.TInTuyenDung?.TieuDe ?? "Tin tuyển dụng";
+                string subject = $"Hệ thống thông báo mời phỏng vấn - {tieuDeTin}";
+                string body = $"<h2>Xin chào,</h2><p>{dto.NoiDungEmail}</p><p>Chúc bạn chuẩn bị tốt!</p><p>Trân trọng,<br>{ntd.NguoiDung.tkName}</p>";
+
+                try
+                {
+                    await _emailService.SendEmailAsync(emailUngVien, subject, body);
+                }
+                catch (Exception ex)
+                {
+                    // Không làm API lỗi, chỉ ghi log
+                    Console.WriteLine($"[EMAIL] Gửi thất bại: {ex.Message}");
+                }
+            }
+
+
             // 5. TẠO NỘI DUNG THÔNG BÁO
-            string tieuDeTin = don.TInTuyenDung?.TieuDe ?? "Tin tuyển dụng";
+            string tieuDeTin2 = don.TInTuyenDung?.TieuDe ?? "Tin tuyển dụng";
             string noiDung = dto.TrangThai switch
             {
-                "Đã duyệt" => $"Chúc mừng! Đơn ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã được **duyệt**.",
-                "Từ chối" => $"Rất tiếc, đơn ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã bị **từ chối**.",
-                "Phỏng vấn" => $"Bạn đã được mời **phỏng vấn** cho tin **\"{tieuDeTin}\"**. Vui lòng kiểm tra email hoặc liên hệ nhà tuyển dụng.",
-                _ => $"Trạng thái ứng tuyển của bạn cho tin **\"{tieuDeTin}\"** đã được cập nhật thành: **{dto.TrangThai}**."
+                "Đã duyệt" => $"Chúc mừng! Đơn ứng tuyển của bạn cho tin **\"{tieuDeTin2}\"** đã được **duyệt**.",
+                "Từ chối" => $"Rất tiếc, đơn ứng tuyển của bạn cho tin **\"{tieuDeTin2}\"** đã bị **từ chối**.",
+                "Phỏng vấn" => $"Bạn đã được mời **phỏng vấn** cho tin **\"{tieuDeTin2}\"**. Vui lòng kiểm tra email hoặc liên hệ nhà tuyển dụng.",
+                _ => $"Trạng thái ứng tuyển của bạn cho tin **\"{tieuDeTin2}\"** đã được cập nhật thành: **{dto.TrangThai}**."
             };
 
             // 6. TẠO THÔNG BÁO
@@ -721,5 +761,7 @@ namespace TImViecAPI.Controllers
                 KetQua = result
             });
         }
+
+        
     }
 }
