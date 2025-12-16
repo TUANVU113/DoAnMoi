@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "R57pEBWolgk=",
+  "dgSpecHash": "aFIKJ/I4pPg=",
   "success": true,
-  "projectFilePath": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj",
+  "projectFilePath": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Nguyễn Tuấn Vũ\\.nuget\\packages\\bcrypt.net-next\\4.0.3\\bcrypt.net-next.4.0.3.nupkg.sha512",
     "C:\\Users\\Nguyễn Tuấn Vũ\\.nuget\\packages\\google.apis\\1.72.0\\google.apis.1.72.0.nupkg.sha512",

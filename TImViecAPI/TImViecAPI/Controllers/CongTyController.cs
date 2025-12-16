@@ -134,12 +134,16 @@ namespace TImViecAPI.Controllers
             });
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetCongTyById(int id)
+        [HttpGet("cong-ty-cua-toi")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<IActionResult> GetCongTyCuaToi()
         {
-            // 1. TÌM CÔNG TY THEO ID
-            var congTy = await _context.CongTy
-                .Where(ct => ct.ctid == id)
+            var username = User.Identity?.Name;
+
+            // Lấy NTD đang đăng nhập → lấy công ty
+            var congTy = await _context.NhaTuyenDung
+                .Where(ntd => ntd.NguoiDung.tkName == username)
+                .Select(ntd => ntd.CongTy)
                 .Select(ct => new
                 {
                     ct.ctid,
@@ -153,23 +157,25 @@ namespace TImViecAPI.Controllers
                     ct.NguoiLienHe,
                     ct.sdtLienHe,
                     ct.MaThue,
-                    ct.sdtCongTy
+                    ct.sdtCongTy,
+                    // Thêm trạng thái kê khai
+                    DaKeKhai = !string.IsNullOrEmpty(ct.ctName) && ct.ctName != "Công ty chưa kê khai"
                 })
                 .FirstOrDefaultAsync();
 
-            // 2. KIỂM TRA KẾT QUẢ
             if (congTy == null)
             {
-                return NotFound(new
-                {
-                    Message = $"Không tìm thấy công ty với ID = {id}."
-                });
+                return NotFound(new { Message = "Không tìm thấy công ty của bạn." });
             }
 
-            // 3. TRẢ VỀ THÀNH CÔNG
+            // Nếu chưa kê khai → gợi ý
+            string message = congTy.DaKeKhai
+                ? "Lấy thông tin công ty thành công!"
+                : "Bạn chưa kê khai thông tin công ty. Vui lòng cập nhật để hiển thị đầy đủ trên tin tuyển dụng!";
+
             return Ok(new
             {
-                Message = "Lấy thông tin công ty thành công!",
+                Message = message,
                 Data = congTy
             });
         }
@@ -304,6 +310,60 @@ namespace TImViecAPI.Controllers
             // Trả file kèm content type
             var fileBytes = await System.IO.File.ReadAllBytesAsync(filePath);
             return File(fileBytes, contentType, Path.GetFileName(filePath));
+        }
+
+        [HttpPut("cap-nhat-cong-ty")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<IActionResult> CapNhatCongTy([FromBody] CapNhatCongTyDto dto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var username = User.Identity?.Name;
+
+            var ntd = await _context.NhaTuyenDung
+                .Include(ntd => ntd.CongTy)
+                .FirstOrDefaultAsync(ntd => ntd.NguoiDung.tkName == username);
+
+            if (ntd == null || ntd.CongTy == null)
+                return NotFound("Không tìm thấy công ty của bạn.");
+
+            var currentCtId = ntd.CongTy.ctid;
+
+            // 1. KIỂM TRA TRÙNG TÊN CÔNG TY (TRỪ BẢN THÂN)
+            if (!string.IsNullOrEmpty(dto.CtName) && dto.CtName != ntd.CongTy.ctName)
+            {
+                if (await _context.CongTy.AnyAsync(ct => ct.ctName == dto.CtName && ct.ctid != currentCtId))
+                {
+                    return BadRequest(new { Message = "Tên công ty đã tồn tại." });
+                }
+            }
+
+            // 2. KIỂM TRA TRÙNG MÃ THUẾ (TRỪ BẢN THÂN)
+            if (!string.IsNullOrEmpty(dto.MaThue) && dto.MaThue != ntd.CongTy.MaThue)
+            {
+                if (await _context.CongTy.AnyAsync(ct => ct.MaThue == dto.MaThue && ct.ctid != currentCtId))
+                {
+                    return BadRequest(new { Message = "Mã thuế đã được sử dụng." });
+                }
+            }
+
+            // CẬP NHẬT THÔNG TIN CÔNG TY
+            ntd.CongTy.ctName = dto.CtName ?? ntd.CongTy.ctName;
+            ntd.CongTy.DiaChi = dto.DiaChi ?? ntd.CongTy.DiaChi;
+            ntd.CongTy.Logo = dto.Logo ?? ntd.CongTy.Logo;
+            ntd.CongTy.MieuTa = dto.MieuTa ?? ntd.CongTy.MieuTa;
+            ntd.CongTy.MoHinh = dto.MoHinh ?? ntd.CongTy.MoHinh;
+            ntd.CongTy.SoNhanVien = dto.SoNhanVien ?? ntd.CongTy.SoNhanVien;
+            ntd.CongTy.QuocGia = dto.QuocGia ?? ntd.CongTy.QuocGia;
+            ntd.CongTy.NguoiLienHe = dto.NguoiLienHe ?? ntd.CongTy.NguoiLienHe;
+            ntd.CongTy.sdtLienHe = dto.SdtLienHe ?? ntd.CongTy.sdtLienHe;
+            ntd.CongTy.MaThue = dto.MaThue ?? ntd.CongTy.MaThue;
+            ntd.CongTy.sdtCongTy = dto.SdtCongTy ?? ntd.CongTy.sdtCongTy;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(new { Message = "Cập nhật thông tin công ty thành công!" });
         }
 
 

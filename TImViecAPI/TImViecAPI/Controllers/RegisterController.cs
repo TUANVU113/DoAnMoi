@@ -221,50 +221,47 @@ namespace TImViecAPI.Controllers
 
             });
         }
-        [HttpPost("register-ntd")]
-        public async Task<IActionResult> RegisterNTD([FromBody] RegisterNTDDto registerDto)
+        [HttpPost("dang-ky-ntd")]
+        public async Task<IActionResult> DangKyNTD([FromBody] DangKyNTDDto dto)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            // Kiểm tra trùng lặp NguoiDung
-            if (await _context.NguoiDung.AnyAsync(u => u.mail == registerDto.Mail))
-            {
-                return BadRequest(new { Message = "Email đã được sử dụng." });
-            }
-            if (await _context.NguoiDung.AnyAsync(u => u.sdt == registerDto.Sdt))
-            {
-                return BadRequest(new { Message = "Số điện thoại đã được sử dụng." });
-            }
-
-            // Kiểm tra CtID tồn tại (nếu cung cấp)
-            if (registerDto.CtID.HasValue && !await _context.CongTy.AnyAsync(ct => ct.ctid == registerDto.CtID.Value))
-            {
-                return BadRequest(new { Message = "Công ty không tồn tại." });
-            }
+            // Kiểm tra trùng email/sdt
+            if (await _context.NguoiDung.AnyAsync(u => u.mail == dto.Mail))
+                return BadRequest("Email đã được sử dụng.");
+            if (await _context.NguoiDung.AnyAsync(u => u.sdt == dto.Sdt))
+                return BadRequest("Số điện thoại đã được sử dụng.");
 
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
-                // Lưu NguoiDung
+                // 1. Tạo NguoiDung
                 var nguoiDung = new NguoiDung
                 {
-                    tkName = registerDto.TkName,
-                    sdt = registerDto.Sdt,
-                    mail = registerDto.Mail,
-                    password = BCrypt.Net.BCrypt.HashPassword(registerDto.Password)
+                    tkName = dto.TkName,
+                    sdt = dto.Sdt,
+                    mail = dto.Mail,
+                    password = BCrypt.Net.BCrypt.HashPassword(dto.Password)
                 };
                 _context.NguoiDung.Add(nguoiDung);
-                await _context.SaveChangesAsync();  // Lấy tkid
+                await _context.SaveChangesAsync();
 
-                // Lưu NhaTuyenDung với ntdid = tkid
+                // 2. TỰ ĐỘNG TẠO CÔNG TY TRỐNG (chỉ để lấy ID)
+                var congTyTrong = new CongTy
+                {
+                    ctName = "Công ty chưa kê khai", // tên tạm
+                                                     // tất cả các trường khác để null hoặc giá trị mặc định
+                };
+                _context.CongTy.Add(congTyTrong);
+                await _context.SaveChangesAsync(); // lấy ctid
+
+                // 3. Tạo NhaTuyenDung gán công ty trống
                 var nhaTuyenDung = new NhaTuyenDung
                 {
-                    ntdid = nguoiDung.tkid,  // Khớp tkid
-                    ntdName = registerDto.NtdName,
-                    ctID = registerDto.CtID  // Null nếu không gửi
+                    ntdid = nguoiDung.tkid,
+                    ntdName = dto.NtdName ?? dto.TkName,
+                    ctID = congTyTrong.ctid // gán công ty trống
                 };
                 _context.NhaTuyenDung.Add(nhaTuyenDung);
                 await _context.SaveChangesAsync();
@@ -273,15 +270,15 @@ namespace TImViecAPI.Controllers
 
                 return Ok(new
                 {
-                    Message = "Đăng ký NTD thành công!",
+                    Message = "Đăng ký thành công! Bạn có thể kê khai thông tin công ty sau trong phần hồ sơ.",
                     TkId = nguoiDung.tkid,
-                    NtdId = nhaTuyenDung.ntdid  // Xác nhận bằng nhau
+                    CtId = congTyTrong.ctid // trả về để frontend biết công ty cần cập nhật
                 });
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                return StatusCode(500, new { Message = "Lỗi khi lưu dữ liệu: " + ex.Message });
+                return StatusCode(500, "Lỗi khi đăng ký: " + ex.Message);
             }
         }
 
