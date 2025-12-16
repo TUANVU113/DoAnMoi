@@ -211,7 +211,6 @@ namespace TImViecAPI.Controllers
         public async Task<ActionResult<IEnumerable<TinTuyenDungDto>>> GoiYThongMinh()
         {
             var username = User.Identity?.Name;
-
             var ungVien = await _context.UngVien
                 .Include(u => u.HoSoList).ThenInclude(h => h.NoiDungHoSo)
                 .FirstOrDefaultAsync(u => u.NguoiDung.tkName == username);
@@ -219,23 +218,83 @@ namespace TImViecAPI.Controllers
             if (ungVien == null || ungVien.HoSoList == null || !ungVien.HoSoList.Any())
                 return Ok(new List<TinTuyenDungDto>());
 
-            // Lấy hồ sơ mới nhất
+            // SỬA LỖI 1: KHAI BÁO latestHoSo
             var latestHoSo = ungVien.HoSoList.OrderByDescending(h => h.hsid).First();
-            if (latestHoSo.NoiDungHoSo == null)
-                return Ok(new List<TinTuyenDungDto>());
+            //if (latestHoSo.NoiDungHoSo == null)
+            //    return Ok(new List<TinTuyenDungDto>());
 
             var cv = latestHoSo.NoiDungHoSo;
-            var cvVector = JobMatchingHelper.ToVector(cv);
+
+
+
+            // TRƯỜNG HỢP UPLOAD CV TỪ MÁY → gợi ý theo lịch sử lĩnh vực (không dùng Cosine)
+            if (!string.IsNullOrEmpty(latestHoSo.ViTriFile))
+            {
+                // Lấy lĩnh vực từ đơn ứng tuyển gần nhất
+                var recentLinhVuc = await _context.UngVien_UngTuyen
+                .Where(uu => uu.ungvienID == ungVien.uvid)
+                .Join(_context.UngTuyen.Include(ut => ut.TInTuyenDung),
+                uu => uu.ungtuyenID,
+                ut => ut.utid,
+                (uu, ut) => new { ut.NgayNop, ut.TInTuyenDung.linhvucIID })
+                .OrderByDescending(x => x.NgayNop)
+                .Select(x => x.linhvucIID ?? 0)
+                .FirstOrDefaultAsync();
+                var linhVucIdForUpload = recentLinhVuc > 0 ? recentLinhVuc : 0;
+                // Lấy 5 tin cùng lĩnh vực hoặc fallback
+                var top5Upload = linhVucIdForUpload > 0
+                ? await _context.TInTuyenDung
+                .Where(t => t.linhvucIID == linhVucIdForUpload
+                && t.TrangThai == "Đã duyệt"
+                && t.HanNop >= DateTime.Today)
+                .OrderByDescending(t => t.NgayDang)
+                .Take(5)
+                .Select(t => new TinTuyenDungDto
+                {
+                    TinId = t.ttdid,
+                    TieuDe = t.TieuDe,
+                    CongTy = t.NhaTuyenDung != null && t.NhaTuyenDung.CongTy != null
+                ? t.NhaTuyenDung.CongTy.ctName
+                : "Chưa cung cấp",
+                    ChucDanh = t.ChucDanh != null ? t.ChucDanh.cdName : null,
+                    NgayDang = t.NgayDang.HasValue ? t.NgayDang.Value.ToString("dd/MM/yyyy") : "Không xác định",
+                    HanNop = t.HanNop.HasValue ? t.HanNop.Value.ToString("dd/MM/yyyy") : "Không xác định",
+                    PhuHop = 100 // Cùng lĩnh vực từ lịch sử
+                })
+                .ToListAsync()
+                : await _context.TInTuyenDung
+                .Where(t => t.TrangThai == "Đã duyệt" && t.HanNop >= DateTime.Today)
+                .OrderByDescending(t => t.NgayDang)
+                .Take(5)
+                .Select(t => new TinTuyenDungDto
+                {
+                    TinId = t.ttdid,
+                    TieuDe = t.TieuDe,
+                    CongTy = t.NhaTuyenDung != null && t.NhaTuyenDung.CongTy != null
+                ? t.NhaTuyenDung.CongTy.ctName
+                : "Chưa cung cấp",
+                    ChucDanh = t.ChucDanh != null ? t.ChucDanh.cdName : null,
+                    NgayDang = t.NgayDang.HasValue ? t.NgayDang.Value.ToString("dd/MM/yyyy") : "Không xác định",
+                    HanNop = t.HanNop.HasValue ? t.HanNop.Value.ToString("dd/MM/yyyy") : "Không xác định",
+                    PhuHop = 70 // Fallback
+                })
+                .ToListAsync();
+                return Ok(top5Upload);
+            }
+
+
+
+
+
             var linhVucId = cv.LinhVucID ?? 0;
 
-            // B1: Lọc tin cùng lĩnh vực (gom cụm theo lĩnh vực)
+            // Lọc tin cùng lĩnh vực
             var candidateJobs = await _context.TInTuyenDung
                 .Where(t => t.linhvucIID == linhVucId
                             && t.TrangThai == "Đã duyệt"
                             && t.HanNop >= DateTime.Today)
                 .ToListAsync();
 
-            // Nếu không có tin cùng lĩnh vực → fallback lấy tất cả (không để trống)
             if (!candidateJobs.Any())
             {
                 candidateJobs = await _context.TInTuyenDung
@@ -243,13 +302,25 @@ namespace TImViecAPI.Controllers
                     .ToListAsync();
             }
 
-            // B2: So sánh trực tiếp → lấy top 5 giống nhất
-            var top5 = candidateJobs
-                .Select(job => new
-                {
-                    Job = job,
-                    Score = JobMatchingHelper.CosineSimilarity(cvVector, JobMatchingHelper.ToVector(job))
-                })
+            if (!candidateJobs.Any())
+                return Ok(new List<TinTuyenDungDto>());
+
+            // SỬA LỖI 2: Lấy maxId chung
+            int maxId = JobMatchingHelper.GetMaxId(cv, candidateJobs);
+
+            var cvVector = JobMatchingHelper.ToVector(cv, maxId);
+
+            // SỬA LỖI 3: Sửa tuple đúng cú pháp
+            var scores = new List<(TInTuyenDung Job, double Score)>();
+
+            foreach (var job in candidateJobs)
+            {
+                var jobVector = JobMatchingHelper.ToVector(job, maxId);
+                var score = JobMatchingHelper.CosineSimilarity(cvVector, jobVector);
+                scores.Add((job, score));
+            }
+
+            var top5 = scores
                 .OrderByDescending(x => x.Score)
                 .Take(5)
                 .Select(x => new TinTuyenDungDto
@@ -260,7 +331,7 @@ namespace TImViecAPI.Controllers
                     ChucDanh = x.Job.ChucDanh?.cdName,
                     NgayDang = x.Job.NgayDang?.ToString("dd/MM/yyyy") ?? "Không xác định",
                     HanNop = x.Job.HanNop?.ToString("dd/MM/yyyy") ?? "Không xác định",
-                    PhuHop = Math.Round(x.Score * 100, 1)  // % phù hợp
+                    PhuHop = Math.Round(x.Score * 100, 1)
                 })
                 .ToList();
 

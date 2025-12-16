@@ -69,7 +69,7 @@ namespace TImViecAPI.Controllers
         }
 
         [HttpPost("add")]
-        [Authorize(Roles = "NhaTuyenDung")] // Chỉ NTD mới tạo tin
+        [Authorize(Roles = "NhaTuyenDung")]
         public async Task<IActionResult> Add([FromBody] TInTuyenDungDto dto)
         {
             if (!ModelState.IsValid)
@@ -77,14 +77,33 @@ namespace TImViecAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            
-            string Users = User.Identity.Name;
-            if (Users == null)
+            string username = User.Identity?.Name;
+            if (string.IsNullOrEmpty(username))
             {
-                return Unauthorized(new { Message = "Người dùng không hợp lệ hoặc không phải NTD." });
+                return Unauthorized(new { Message = "Người dùng không hợp lệ." });
             }
-            var id_nhaTuyenDung = _context.NguoiDung.FirstOrDefault(ntd => ntd.tkName == Users);
 
+            // Lấy NTD và công ty của họ
+            var ntd = await _context.NhaTuyenDung
+                .Include(n => n.CongTy)
+                .Include(n => n.NguoiDung)
+                .FirstOrDefaultAsync(n => n.NguoiDung.tkName == username);
+
+            if (ntd == null)
+            {
+                return NotFound(new { Message = "Không tìm thấy thông tin nhà tuyển dụng." });
+            }
+
+            // RÀNG BUỘC MỚI: Bắt buộc phải kê khai tên công ty trước khi tạo tin
+            if (ntd.CongTy == null ||
+                string.IsNullOrWhiteSpace(ntd.CongTy.ctName) ||
+                ntd.CongTy.ctName.Trim() == "Công ty chưa kê khai")
+            {
+                return BadRequest(new
+                {
+                    Message = "Bạn cần kê khai đầy đủ thông tin công ty (ít nhất là tên công ty) trước khi đăng tin tuyển dụng. Vui lòng cập nhật hồ sơ công ty!"
+                });
+            }
 
             // Kiểm tra các FK tồn tại
             if (!await _context.LoaiHinhLamViec.AnyAsync(lh => lh.lhid == dto.loaihinhID) ||
@@ -101,7 +120,7 @@ namespace TImViecAPI.Controllers
             {
                 TieuDe = dto.TieuDe,
                 MieuTa = dto.MieuTa,
-                DaDuyet = false, // Luôn đặt DaDuyet = false khi tạo mới
+                DaDuyet = false,
                 TrangThai = dto.TrangThai ?? "Chờ duyệt",
                 YeuCau = dto.YeuCau,
                 Tuoi = dto.Tuoi,
@@ -113,21 +132,23 @@ namespace TImViecAPI.Controllers
                 bangcapID = dto.bangcapID,
                 linhvucIID = dto.linhvucIID,
                 vitriID = dto.vitriID,
-                nhaTuyenDungID = id_nhaTuyenDung.tkid
+                nhaTuyenDungID = ntd.ntdid
             };
 
             _context.TInTuyenDung.Add(tinTuyenDung);
             await _context.SaveChangesAsync();
-            // Tạo thông báo cho tất cả tài khoản Admin
+
+            // Tạo thông báo cho tất cả Admin
             var admins = await _context.NguoiDung
                 .Where(u => !_context.UngVien.Any(uv => uv.uvid == u.tkid) &&
-                           !_context.NhaTuyenDung.Any(ntd => ntd.ntdid == u.tkid))
+                            !_context.NhaTuyenDung.Any(ntd => ntd.ntdid == u.tkid))
                 .ToListAsync();
+
             foreach (var admin in admins)
             {
                 var thongBao = new ThongBao
                 {
-                    NoiDung = $"Tin tuyển dụng mới '{dto.TieuDe}' cần được duyệt.",
+                    NoiDung = $"Tin tuyển dụng mới '{dto.TieuDe}' từ công ty '{ntd.CongTy.ctName}' cần được duyệt.",
                     NgayBao = DateTime.UtcNow
                 };
                 _context.ThongBao.Add(thongBao);
@@ -141,10 +162,14 @@ namespace TImViecAPI.Controllers
                 };
                 _context.NguoiDung_ThongBao.Add(nguoiDungThongBao);
             }
+
             await _context.SaveChangesAsync();
 
-            return Ok(new { Message = "Tin tuyển dụng đã được tạo và đang chờ duyệt!", ttdid = tinTuyenDung.ttdid });
-            //return Ok(new { Message = "Thêm tin tuyển dụng thành công!", ttdid = tinTuyenDung.ttdid });
+            return Ok(new
+            {
+                Message = "Tin tuyển dụng đã được tạo thành công và đang chờ duyệt!",
+                ttdid = tinTuyenDung.ttdid
+            });
         }
 
         [HttpPut("approve/{id}")]

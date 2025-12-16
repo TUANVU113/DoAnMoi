@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj": {}
+    "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj": {}
   },
   "projects": {
-    "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj": {
+    "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj",
+        "projectUniqueName": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj",
         "projectName": "TImViecAPI",
-        "projectPath": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj",
+        "projectPath": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\TImViecAPI.csproj",
         "packagesPath": "C:\\Users\\Nguyễn Tuấn Vũ\\.nuget\\packages\\",
-        "outputPath": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\obj\\",
+        "outputPath": "D:\\Khóa Luận Cử Nhân\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\Nguyễn Tuấn Vũ\\AppData\\Roaming\\NuGet\\NuGet.Config",

@@ -1,52 +1,84 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\",
+  "WorkspaceRootPath": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\controllers\\tocaocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\tocaocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\controllers\\ungtuyencontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\ungtuyencontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\controllers\\tintuyendungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\controllers\\tintuyendungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\tintuyendungcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\xulytocaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\xulytocaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\controllers\\tocaocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\tocaocontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\helpers\\vectorhelpercs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\helpers\\vectorhelpercs.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\controllers\\thongtincanhancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\thongtincanhancontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\controllers\\congtycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\congtycontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\dangkyntddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\dangkyntddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\controllers\\registercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\registercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\capnhatcongtydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\capnhatcongtydto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\registerntddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\registerntddto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\controllers\\admincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\suatocaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\xulytocaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\xulytocaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\suatocaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\suatocaodto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\tocaotindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\tocaotindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\tocaotindto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\capnhattrangthaidto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model_function\\dtos\\capnhattrangthaidto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model_function\\dtos\\capnhattrangthaidto.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\model\\baocao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\model\\baocao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\model\\baocao.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\doanmoi\\timviecapi\\timviecapi\\migrations\\20251210114432_addtocaotin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|d:\\kh\u00F3a lu\u1EADn c\u1EED nh\u00E2n\\doanmoi\\timvieclam\\doanmoi\\timviecapi\\timviecapi\\migrations\\20251210114432_addtocaotin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{9D853A66-19D5-4931-ACDE-AFF23E800E8C}|TImViecAPI\\TImViecAPI.csproj|solutionrelative:timviecapi\\migrations\\20251210114432_addtocaotin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
     {
-      "Orientation": 0,
+      "Orientation": 1,
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "DockedHeight": 382,
+          "SelectedChildIndex": 1,
           "Children": [
             {
               "$type": "Bookmark",
@@ -54,11 +86,154 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "UngTuyenController.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\UngTuyenController.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\UngTuyenController.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\UngTuyenController.cs",
+              "RelativeToolTip": "TImViecAPI\\Controllers\\UngTuyenController.cs",
+              "ViewState": "AgIAAPwAAAAAAAAAAAAAAAYBAAASAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T18:07:53.473Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "VectorHelpercs.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Helpers\\VectorHelpercs.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Helpers\\VectorHelpercs.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Helpers\\VectorHelpercs.cs",
+              "RelativeToolTip": "TImViecAPI\\Helpers\\VectorHelpercs.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAAACEAAABCAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T18:07:38.527Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "CongTyController.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\CongTyController.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\CongTyController.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\CongTyController.cs",
+              "RelativeToolTip": "TImViecAPI\\Controllers\\CongTyController.cs",
+              "ViewState": "AgIAAHgAAAAAAAAAAAAAAIgAAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T17:51:02.088Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "RegisterController.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\RegisterController.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\RegisterController.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\RegisterController.cs",
+              "RelativeToolTip": "TImViecAPI\\Controllers\\RegisterController.cs",
+              "ViewState": "AgIAANoAAAAAAAAAAAAuwOAAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T17:48:56.933Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "TInTuyenDungController.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\TInTuyenDungController.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\TInTuyenDungController.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\TInTuyenDungController.cs",
+              "RelativeToolTip": "TImViecAPI\\Controllers\\TInTuyenDungController.cs",
+              "ViewState": "AgIAANcCAAAAAAAAAAAAAKwAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-02T13:13:37.975Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "ToCaoController.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\ToCaoController.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\ToCaoController.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\ToCaoController.cs",
+              "RelativeToolTip": "TImViecAPI\\Controllers\\ToCaoController.cs",
+              "ViewState": "AgIAANkAAAAAAAAAAAAYwOcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T11:58:25.929Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "ThongTinCaNhanController.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\ThongTinCaNhanController.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\ThongTinCaNhanController.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\ThongTinCaNhanController.cs",
+              "RelativeToolTip": "TImViecAPI\\Controllers\\ThongTinCaNhanController.cs",
+              "ViewState": "AgIAAHcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T18:07:48.013Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "CapNhatCongTyDto.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\CapNhatCongTyDto.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Model_Function\\Dtos\\CapNhatCongTyDto.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\CapNhatCongTyDto.cs",
+              "RelativeToolTip": "TImViecAPI\\Model_Function\\Dtos\\CapNhatCongTyDto.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAAwBMAAAA9AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T17:50:35.057Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "DangKyNTDDto.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\DangKyNTDDto.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Model_Function\\Dtos\\DangKyNTDDto.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\DangKyNTDDto.cs",
+              "RelativeToolTip": "TImViecAPI\\Model_Function\\Dtos\\DangKyNTDDto.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAAAAAB8AAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T17:48:23.269Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "RegisterNTDDto.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\RegisterNTDDto.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Model_Function\\Dtos\\RegisterNTDDto.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\RegisterNTDDto.cs",
+              "RelativeToolTip": "TImViecAPI\\Model_Function\\Dtos\\RegisterNTDDto.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-16T17:47:26.742Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "AdminController.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\AdminController.cs",
+              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\AdminController.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\AdminController.cs",
+              "RelativeToolTip": "TImViecAPI\\Controllers\\AdminController.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-12-10T12:59:29.269Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
               "Title": "XuLyToCaoDto.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\XuLyToCaoDto.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\XuLyToCaoDto.cs",
               "RelativeDocumentMoniker": "TImViecAPI\\Model_Function\\Dtos\\XuLyToCaoDto.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\XuLyToCaoDto.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\XuLyToCaoDto.cs",
               "RelativeToolTip": "TImViecAPI\\Model_Function\\Dtos\\XuLyToCaoDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -66,23 +241,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "AdminController.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\AdminController.cs",
-              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\AdminController.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\AdminController.cs",
-              "RelativeToolTip": "TImViecAPI\\Controllers\\AdminController.cs",
-              "ViewState": "AgIAAI4AAAAAAAAAAAAkwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-10T12:59:29.269Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 12,
               "Title": "SuaToCaoDto.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\SuaToCaoDto.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\SuaToCaoDto.cs",
               "RelativeDocumentMoniker": "TImViecAPI\\Model_Function\\Dtos\\SuaToCaoDto.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\SuaToCaoDto.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\SuaToCaoDto.cs",
               "RelativeToolTip": "TImViecAPI\\Model_Function\\Dtos\\SuaToCaoDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -90,24 +253,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "ToCaoController.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\ToCaoController.cs",
-              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\ToCaoController.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\ToCaoController.cs*",
-              "RelativeToolTip": "TImViecAPI\\Controllers\\ToCaoController.cs*",
-              "ViewState": "AgIAACYBAAAAAAAAAAAgwCgBAAAKAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-10T11:58:25.929Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 13,
               "Title": "ToCaoTinDto.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\ToCaoTinDto.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\ToCaoTinDto.cs",
               "RelativeDocumentMoniker": "TImViecAPI\\Model_Function\\Dtos\\ToCaoTinDto.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\ToCaoTinDto.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\ToCaoTinDto.cs",
               "RelativeToolTip": "TImViecAPI\\Model_Function\\Dtos\\ToCaoTinDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAA/AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -115,11 +265,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 14,
               "Title": "CapNhatTrangThaiDto.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\CapNhatTrangThaiDto.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\CapNhatTrangThaiDto.cs",
               "RelativeDocumentMoniker": "TImViecAPI\\Model_Function\\Dtos\\CapNhatTrangThaiDto.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\CapNhatTrangThaiDto.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model_Function\\Dtos\\CapNhatTrangThaiDto.cs",
               "RelativeToolTip": "TImViecAPI\\Model_Function\\Dtos\\CapNhatTrangThaiDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAjAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -127,11 +277,11 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 16,
               "Title": "20251210114432_AddToCaoTin.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Migrations\\20251210114432_AddToCaoTin.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Migrations\\20251210114432_AddToCaoTin.cs",
               "RelativeDocumentMoniker": "TImViecAPI\\Migrations\\20251210114432_AddToCaoTin.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Migrations\\20251210114432_AddToCaoTin.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Migrations\\20251210114432_AddToCaoTin.cs",
               "RelativeToolTip": "TImViecAPI\\Migrations\\20251210114432_AddToCaoTin.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -139,28 +289,25 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 15,
               "Title": "BaoCao.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model\\BaoCao.cs",
+              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model\\BaoCao.cs",
               "RelativeDocumentMoniker": "TImViecAPI\\Model\\BaoCao.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model\\BaoCao.cs",
+              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\TimViecLam\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Model\\BaoCao.cs",
               "RelativeToolTip": "TImViecAPI\\Model\\BaoCao.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2025-12-10T11:37:26.065Z"
-            },
+            }
+          ]
+        },
+        {
+          "DockedHeight": 18,
+          "SelectedChildIndex": -1,
+          "Children": [
             {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "TInTuyenDungController.cs",
-              "DocumentMoniker": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\TInTuyenDungController.cs",
-              "RelativeDocumentMoniker": "TImViecAPI\\Controllers\\TInTuyenDungController.cs",
-              "ToolTip": "D:\\Kh\u00F3a Lu\u1EADn C\u1EED Nh\u00E2n\\DoAnMoi\\DoAnMoi\\TImViecAPI\\TImViecAPI\\Controllers\\TInTuyenDungController.cs",
-              "RelativeToolTip": "TImViecAPI\\Controllers\\TInTuyenDungController.cs",
-              "ViewState": "AgIAAO0AAAAAAAAAAAAQwN0AAAA8AAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-12-02T13:13:37.975Z",
-              "EditorCaption": ""
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
             }
           ]
         }
