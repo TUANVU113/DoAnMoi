@@ -50,6 +50,55 @@ namespace TImViecAPI.Controllers
 
             return Ok(new { message = "Tố cáo thành công! Admin sẽ xem xét sớm." });
         }
+        // GET: api/hoso/to-cao-cua-toi
+        // Chỉ ứng viên mới được xem danh sách tố cáo do chính mình gửi
+        [HttpGet("to-cao-cua-toi")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<IActionResult> GetMyToCao()
+        {
+            var username = User.Identity?.Name;
+            var ungVien = await _context.UngVien
+                .FirstOrDefaultAsync(u => u.NguoiDung.tkName == username);
+
+            if (ungVien == null) return Unauthorized();
+
+            var list = await _context.ToCaoTin
+                .Where(t => t.ungvienID == ungVien.uvid)
+                .Include(t => t.TinTuyenDung!)
+                    .ThenInclude(tin => tin.NhaTuyenDung!.CongTy)
+                .OrderByDescending(t => t.NgayToCao)
+                .Select(t => new
+                {
+                    t.Id,
+                    TinTuyenDung = new
+                    {
+                        t.TinTuyenDung.ttdid,
+                        t.TinTuyenDung.TieuDe,
+                        t.TinTuyenDung.NhaTuyenDung.CongTy.ctName
+                    },
+                    t.LyDo,
+                    t.NoiDung,
+                    t.TrangThai, // Chờ xử lý / Đã duyệt / Từ chối
+                    NgayToCao = t.NgayToCao.ToString("dd/MM/yyyy HH:mm")
+                })
+                .ToListAsync();
+
+            if (!list.Any())
+            {
+                return Ok(new
+                {
+                    Message = "Bạn chưa tố cáo tin tuyển dụng nào.",
+                    Data = new List<object>()
+                });
+            }
+
+            return Ok(new
+            {
+                Message = "Lấy lịch sử tố cáo thành công!",
+                Total = list.Count,
+                Data = list
+            });
+        }
 
         // GET: api/admin/to-cao-tin
         [HttpGet]
@@ -178,20 +227,20 @@ namespace TImViecAPI.Controllers
         }
 
         // 3. SỬA TRẠNG THÁI (Duyệt / Từ chối)
-        //[HttpPut("cap-nhat-trang-thai/{id}")]
-        //public async Task<IActionResult> CapNhatTrangThai(int id, [FromBody] CapNhatTrangThaiToCaoDto dto)
-        //{
-        //    var toCao = await _context.ToCaoTin.FindAsync(id);
-        //    if (toCao == null) return NotFound();
+        [HttpPut("cap-nhat-trang-thai/{id}")]
+        public async Task<IActionResult> CapNhatTrangThai(int id, [FromBody] CapNhatTrangThaiToCaoDto dto)
+        {
+            var toCao = await _context.ToCaoTin.FindAsync(id);
+            if (toCao == null) return NotFound();
 
-        //    if (!new[] { "Đã duyệt", "Từ chối" }.Contains(dto.TrangThai))
-        //        return BadRequest("Trạng thái chỉ được là: Đã duyệt hoặc Từ chối");
+            if (!new[] { "Đã duyệt", "Từ chối" }.Contains(dto.TrangThai))
+                return BadRequest("Trạng thái chỉ được là: Đã duyệt hoặc Từ chối");
 
-        //    toCao.TrangThai = dto.TrangThai;
-        //    await _context.SaveChangesAsync();
+            toCao.TrangThai = dto.TrangThai;
+            await _context.SaveChangesAsync();
 
-        //    return Ok(new { message = "Cập nhật trạng thái thành công", trangThai = toCao.TrangThai });
-        //}
+            return Ok(new { message = "Cập nhật trạng thái thành công", trangThai = toCao.TrangThai });
+        }
 
         // DTO cho sửa trạng thái
         public class CapNhatTrangThaiToCaoDto

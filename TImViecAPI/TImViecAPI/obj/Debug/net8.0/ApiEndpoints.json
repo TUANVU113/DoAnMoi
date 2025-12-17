@@ -1,6 +1,46 @@
 [
   {
     "ContainingType": "TImViecAPI.Controllers.AdminController",
+    "Method": "ThongKeTinCuaNTD",
+    "RelativePath": "api/Admin/thong-ke-tin-cua-toi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "TImViecAPI.Model_Function.Dtos.ThongKeTuNgayDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.AdminController",
+    "Method": "ThongKeUngTuyenCuaUngVien",
+    "RelativePath": "api/Admin/thong-ke-ung-tuyen-cua-toi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": [
+      {
+        "Type": "TImViecAPI.Model_Function.Dtos.ThongKeUngTuyenFullDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.AdminController",
     "Method": "ThongKeTinTuyenDung",
     "RelativePath": "api/Admin/tin-tuyen-dung",
     "HttpMethod": "GET",
@@ -1528,6 +1568,27 @@
   },
   {
     "ContainingType": "TImViecAPI.Controllers.ToCaoController",
+    "Method": "CapNhatTrangThai",
+    "RelativePath": "api/ToCao/cap-nhat-trang-thai/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "TImViecAPI.Controllers.ToCaoController\u002BCapNhatTrangThaiToCaoDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.ToCaoController",
     "Method": "GetTinDaKhoa",
     "RelativePath": "api/ToCao/da-khoa",
     "HttpMethod": "GET",
@@ -1555,6 +1616,16 @@
         "IsRequired": true
       }
     ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "TImViecAPI.Controllers.ToCaoController",
+    "Method": "GetMyToCao",
+    "RelativePath": "api/ToCao/to-cao-cua-toi",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
     "ReturnTypes": []
   },
   {
