@@ -145,6 +145,69 @@ namespace TImViecAPI.Controllers
             return Ok(result);
         }
 
+        [HttpGet("thong-ke-tin-cua-toi")]
+        [Authorize(Roles = "NhaTuyenDung")]
+        public async Task<ActionResult<ThongKeTuNgayDto>> ThongKeTinCuaNTD()
+        {
+            var username = User.Identity?.Name;
+            var ntd = await _context.NhaTuyenDung
+                .Include(n => n.NguoiDung)
+                .FirstOrDefaultAsync(n => n.NguoiDung.tkName == username);
 
+            if (ntd == null) return Unauthorized();
+
+            var now = DateTime.Today;
+            var startOfWeek = now.AddDays(-(int)now.DayOfWeek);
+            var startOfMonth = new DateTime(now.Year, now.Month, 1);
+            var startOfYear = new DateTime(now.Year, 1, 1);
+            var startDate = new DateTime(2025, 9, 20); // từ ngày hệ thống hoạt động
+
+            var query = _context.TInTuyenDung.Where(t => t.nhaTuyenDungID == ntd.ntdid);
+
+            var result = new ThongKeTuNgayDto
+            {
+                TuNgay = await query.CountAsync(t => t.NgayDang >= startDate),
+                Ngay = await query.CountAsync(t => t.NgayDang >= now),
+                Tuan = await query.CountAsync(t => t.NgayDang >= startOfWeek),
+                Thang = await query.CountAsync(t => t.NgayDang >= startOfMonth),
+                Nam = await query.CountAsync(t => t.NgayDang >= startOfYear)
+            };
+
+            return Ok(result);
+        }
+
+        [HttpGet("thong-ke-ung-tuyen-cua-toi")]
+        [Authorize(Roles = "UngVien")]
+        public async Task<ActionResult<ThongKeUngTuyenFullDto>> ThongKeUngTuyenCuaUngVien()
+        {
+            var username = User.Identity?.Name;
+            var ungVien = await _context.UngVien
+                .FirstOrDefaultAsync(u => u.NguoiDung.tkName == username);
+
+            if (ungVien == null) return Unauthorized();
+
+            var now = DateTime.Today;
+            var startOfWeek = now.AddDays(-(int)now.DayOfWeek);
+            var startOfMonth = new DateTime(now.Year, now.Month, 1);
+            var startOfYear = new DateTime(now.Year, 1, 1);
+            var startDate = new DateTime(2025, 9, 20);
+
+            var ungTuyenIds = _context.UngVien_UngTuyen
+                .Where(uu => uu.ungvienID == ungVien.uvid)
+                .Select(uu => uu.ungtuyenID);
+
+            var query = _context.UngTuyen.Where(ut => ungTuyenIds.Contains(ut.utid));
+
+            var result = new ThongKeUngTuyenFullDto
+            {
+                TuNgay = await query.CountAsync(t => t.NgayNop >= startDate),
+                Ngay = await query.CountAsync(t => t.NgayNop >= now),
+                Tuan = await query.CountAsync(t => t.NgayNop >= startOfWeek),
+                Thang = await query.CountAsync(t => t.NgayNop >= startOfMonth),
+                Nam = await query.CountAsync(t => t.NgayNop >= startOfYear)
+            };
+
+            return Ok(result);
+        }
     }
 }
